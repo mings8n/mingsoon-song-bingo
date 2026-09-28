@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>밍쑨 노래 빙고</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<style>
+
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Pretendard',-apple-system,sans-serif;}
+:root{
+  --blue:#2563eb;--blue-lt:#dbeafe;--blue-md:#93c5fd;--blue-dk:#1d4ed8;--blue-xl:#eff6ff;
+  --g50:#f9fafb;--g100:#f3f4f6;--g200:#e5e7eb;--g300:#d1d5db;
+  --g400:#9ca3af;--g500:#6b7280;--g600:#4b5563;--g800:#1f2937;
+  --amber:#f59e0b;--amber-lt:#fef3c7;--amber-md:#fde68a;
+  --green:#059669;--green-lt:#d1fae5;
+  --red:#dc2626;--red-lt:#fee2e2;
+}
+body{background:#f8fafc;min-height:100vh;color:var(--g800);}
+header{background:white;border-bottom:1px solid var(--g200);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.logo{font-size:18px;font-weight:600;letter-spacing:-.3px;}
+.logo em{color:var(--blue);font-style:normal;}
+.btn-sm{font-size:13px;padding:6px 14px;border:1px solid var(--g200);border-radius:8px;background:transparent;color:var(--g600);cursor:pointer;font-family:inherit;text-decoration:none;display:inline-block;}
+.btn-sm:hover{background:var(--g100);}
+main{max-width:1120px;margin:0 auto;padding:20px 16px 48px;}
+
+/* 상태 바 */
+.statusbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:white;border:1px solid var(--g200);border-radius:12px;padding:12px 14px;margin-bottom:12px;}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:5px 11px;border-radius:999px;}
+.pill.lock{background:var(--g100);color:var(--g600);}
+.pill.open{background:var(--green-lt);color:var(--green);}
+.pill .dot{width:7px;height:7px;border-radius:50%;background:currentColor;}
+.pill.open .dot{animation:blink 1.2s infinite;}
+@keyframes blink{50%{opacity:.25}}
+.linecount{margin-left:auto;font-size:14px;color:var(--g600);}
+.linecount b{font-size:20px;color:var(--g800);font-weight:800;margin:0 2px;}
+.guide{font-size:13px;color:var(--blue-dk);background:var(--blue-xl);border:1px solid var(--blue-lt);border-radius:10px;padding:10px 12px;margin-bottom:12px;display:none;line-height:1.5;}
+.guide.show{display:block;}
+
+/* 보상 */
+.rewards{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.rw{display:flex;align-items:center;gap:8px;background:white;border:1px solid var(--g200);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--g600);}
+.rw .n{font-weight:700;color:var(--g800);font-size:12px;background:var(--g100);border-radius:6px;padding:2px 7px;}
+.rw.hit{border-color:var(--blue-md);background:var(--blue-xl);color:var(--blue-dk);}
+.rw.hit .n{background:var(--blue);color:white;}
+.rw.final{border-color:var(--amber-md);background:#fffbeb;color:#92400e;font-weight:600;}
+.rw.final .n{background:var(--amber);color:white;}
+.rw.final.hit{background:var(--amber);border-color:var(--amber);color:white;}
+.rw.final.hit .n{background:white;color:#b45309;}
+
+/* 레이아웃 */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start;}
+@media(max-width:860px){.layout{grid-template-columns:1fr;}}
+
+/* 빙고판 */
+.board-wrap{background:white;border:1px solid var(--g200);border-radius:14px;padding:14px;}
+.board{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+.cell{position:relative;aspect-ratio:1;border:1.5px solid var(--g200);border-radius:10px;background:var(--g50);padding:8px;display:flex;flex-direction:column;overflow:hidden;cursor:default;transition:border-color .12s,background .12s;}
+.cell .cond{font-size:12px;font-weight:600;color:var(--g500);line-height:1.25;word-break:keep-all;}
+.cell .song{margin-top:auto;font-size:13px;font-weight:700;line-height:1.25;color:var(--g800);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all;}
+.cell .artist{font-size:11px;color:var(--g500);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cell.placed{background:white;border-color:var(--blue-md);}
+.cell.checked{background:var(--blue);border-color:var(--blue);}
+.cell.checked .cond{color:rgba(255,255,255,.75);}
+.cell.checked .song{color:white;}
+.cell.checked .artist{color:rgba(255,255,255,.75);}
+.cell .stamp{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:white;color:var(--blue);display:none;align-items:center;justify-content:center;font-size:13px;font-weight:800;}
+.cell.checked .stamp{display:flex;}
+.cell.target{border-style:dashed;border-color:var(--blue);background:var(--blue-xl);}
+.cell.pickable{cursor:pointer;}
+.cell.pickable:hover{border-color:var(--blue);}
+.board-empty{text-align:center;color:var(--g400);font-size:14px;padding:60px 0;}
+@media(max-width:560px){
+  .board-wrap{padding:8px;}
+  .board{gap:4px;}
+  .cell{padding:5px;border-radius:7px;}
+  .cell .cond{font-size:10px;}
+  .cell .song{font-size:11px;}
+  .cell .artist{display:none;}
+  .cell .stamp{width:16px;height:16px;font-size:10px;top:3px;right:3px;}
+}
+
+/* 노래 풀 */
+.pool{background:white;border:1px solid var(--g200);border-radius:14px;padding:14px;position:sticky;top:70px;max-height:calc(100vh - 90px);display:flex;flex-direction:column;}
+@media(max-width:860px){.pool{position:static;max-height:none;}}
+.pool h2{font-size:15px;font-weight:700;margin-bottom:2px;}
+.pool .sub{font-size:12px;color:var(--g400);margin-bottom:10px;}
+.search{width:100%;padding:9px 12px;border:1px solid var(--g200);border-radius:8px;font-size:14px;font-family:inherit;background:var(--g50);outline:none;}
+.search:focus{border-color:var(--blue);background:white;}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin:10px 0;}
+.tag{font-size:12px;padding:4px 9px;border-radius:999px;border:1px solid var(--g200);background:white;color:var(--g600);cursor:pointer;font-family:inherit;}
+.tag.on{background:var(--g800);border-color:var(--g800);color:white;}
+.songs{overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:6px;min-height:120px;}
+@media(max-width:860px){.songs{max-height:420px;}}
+.song-item{border:1px solid var(--g200);border-radius:9px;padding:9px 11px;background:white;cursor:grab;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:pan-y;display:flex;align-items:center;gap:10px;}
+.song-item:hover{border-color:var(--blue-md);}
+.song-item.sel{border-color:var(--blue);background:var(--blue-xl);box-shadow:0 0 0 2px var(--blue-lt);}
+.song-item .grip{color:var(--g300);font-size:14px;letter-spacing:-2px;}
+.song-item .t{font-size:14px;font-weight:600;line-height:1.3;}
+.song-item .a{font-size:12px;color:var(--g500);}
+.song-item .tg{font-size:11px;color:var(--g400);margin-top:2px;}
+.song-item .badge{margin-left:auto;font-size:11px;font-weight:600;padding:2px 7px;border-radius:6px;white-space:nowrap;}
+.song-item.off{cursor:not-allowed;background:var(--g50);}
+.song-item.off .t{color:var(--g400);}
+.song-item.off.used .t{text-decoration:line-through;}
+.badge.used{background:var(--g200);color:var(--g600);}
+.badge.onboard{background:var(--blue-lt);color:var(--blue-dk);}
+.empty{font-size:13px;color:var(--g400);text-align:center;padding:24px 0;}
+
+/* 드래그 고스트 */
+.ghost{position:fixed;z-index:200;pointer-events:none;background:var(--blue);color:white;font-size:13px;font-weight:600;padding:8px 12px;border-radius:9px;box-shadow:0 8px 24px rgba(37,99,235,.35);transform:translate(-50%,-120%);white-space:nowrap;max-width:240px;overflow:hidden;text-overflow:ellipsis;}
+
+/* 모달 */
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px;}
+.overlay.hidden{display:none;}
+.modal{background:white;border-radius:14px;padding:22px;width:100%;max-width:380px;}
+.modal h3{font-size:16px;font-weight:700;margin-bottom:10px;}
+.modal p{font-size:14px;color:var(--g600);line-height:1.6;}
+.modal p b{color:var(--g800);}
+.mbtns{display:flex;gap:8px;margin-top:18px;}
+.mbtns button{flex:1;padding:10px;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit;font-weight:500;}
+.btn-cancel{background:var(--g100);border:1px solid var(--g200);color:var(--g600);}
+.btn-confirm{background:var(--blue);border:none;color:white;}
+.btn-confirm:hover{background:var(--blue-dk);}
+
+/* 빙고 축하 */
+.celebrate{background:white;border-radius:18px;padding:28px 24px;text-align:center;max-width:340px;width:100%;}
+.celebrate .big{font-size:40px;font-weight:900;color:var(--blue);letter-spacing:-1px;}
+.celebrate.final .big{color:var(--amber);}
+.celebrate .rtext{margin-top:8px;font-size:15px;color:var(--g600);}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--g800);color:white;font-size:14px;padding:10px 16px;border-radius:10px;z-index:300;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw;text-align:center;}
+.toast.show{opacity:1;}
+@media(prefers-reduced-motion:reduce){.pill.open .dot{animation:none;}}
+
+/* 빙고 줄 표시 */
+.board{position:relative;}
+.bingo-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:3;}
+.bingo-log{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+.bingo-log:empty{display:none;}
+.blog{display:inline-flex;align-items:center;gap:7px;font-size:13px;background:var(--g50);border:1px solid var(--g200);border-radius:9px;padding:6px 10px;color:var(--g600);}
+.blog .num{width:20px;height:20px;border-radius:50%;color:white;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none;}
+.blog b{color:var(--g800);font-weight:700;}
+.blog .rwt{color:var(--g500);}
+.celebrate .line{margin-top:6px;font-size:14px;color:var(--g500);}
+
+/* 태그 색 */
+.tchip{display:inline-block;font-size:11px;font-weight:600;line-height:1.3;background:var(--tb);color:var(--tf);border-radius:6px;padding:2px 7px;margin:2px 4px 0 0;}
+.tag[style]{background:var(--tb);color:var(--tf);border-color:var(--tl);font-weight:500;}
+.tag[style]:hover{border-color:var(--tf);}
+.tag.on[style]{background:var(--tb);color:var(--tf);border-color:var(--tf);box-shadow:inset 0 0 0 1px var(--tf);font-weight:700;}
+.tag.on[style]::before{content:'✓ ';}
+.song-item.off .tchip{opacity:.55;}
+.cell .cond{align-self:flex-start;}
+.song-item .tg{margin-top:1px;}
+
+/* 부른 순서 */
+.sung-wrap{background:white;border:1px solid var(--g200);border-radius:14px;padding:14px;margin-top:16px;}
+.sung-wrap h2{font-size:15px;font-weight:700;display:flex;align-items:baseline;gap:8px;}
+.sung-wrap h2 span{font-size:13px;font-weight:500;color:var(--g400);}
+.sung-list{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px;margin-top:10px;}
+.sung{display:flex;align-items:center;gap:10px;border:1px solid var(--g200);border-radius:10px;padding:8px 10px;}
+.sung .sn{width:24px;height:24px;border-radius:50%;background:var(--blue);color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;}
+.sung .sbody{min-width:0;flex:1;}
+.sung .stitle{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sung .sart{font-size:12px;font-weight:400;color:var(--g500);margin-left:6px;}
+.sung .smeta{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px;}
+.sung .scell{font-size:11px;color:var(--g600);background:var(--g100);border-radius:5px;padding:1px 6px;}
+.sung .scell.out{color:var(--g400);}
+.sung .sbingo{font-size:11px;font-weight:700;color:white;border-radius:5px;padding:1px 6px;}
+.sung .stime{font-size:11px;color:var(--g400);flex:none;}
+.sung-list .empty{grid-column:1/-1;}
+
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">밍쑨 <em>노래</em> 빙고</div>
+  <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:var(--g300);">v6</span><a href="admin.html" class="btn-sm">관리자</a></div>
+</header>
+<main>
+  <div class="statusbar">
+    <span class="pill lock" id="lockPill"><span class="dot"></span>불러오는 중</span>
+    <span class="linecount">빙고 <b id="lineNum">0</b>줄</span>
+  </div>
+  <div class="guide" id="guide">노래 목록에서 곡을 끌어 조건에 맞는 빈 칸에 넣어 주세요. 곡을 누른 뒤 칸을 눌러도 돼요.</div>
+  <div class="rewards" id="rewards"></div>
+
+  <div class="layout">
+    <section class="board-wrap">
+      <div class="board" id="board"><div class="board-empty" style="grid-column:1/-1">불러오는 중...</div></div>
+      <div class="bingo-log" id="bingoLog"></div>
+    </section>
+    <aside class="pool">
+      <h2>노래 목록</h2>
+      <div class="sub">빙고판이 열려 있을 때 곡을 끌어서 빈 칸에 놓을 수 있어요.</div>
+      <input class="search" id="search" placeholder="제목, 가수 검색">
+      <div class="tags" id="tags"></div>
+      <div class="songs" id="songs"><div class="empty">불러오는 중...</div></div>
+    </aside>
+  </div>
+  <section class="sung-wrap">
+    <h2>부른 순서 <span id="sungCount"></span></h2>
+    <ol class="sung-list" id="sungLog"><div class="empty">불러오는 중...</div></ol>
+  </section>
+</main>
+
+<div class="overlay hidden" id="confirmModal">
+  <div class="modal">
+    <h3>이 칸에 넣을까요?</h3>
+    <p id="confirmText"></p>
+    <div class="mbtns">
+      <button class="btn-cancel" id="confirmNo">취소</button>
+      <button class="btn-confirm" id="confirmYes">넣기</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="celebModal">
+  <div class="celebrate" id="celebBox">
+    <div class="big" id="celebBig"></div>
+    <div class="line" id="celebLine"></div>
+    <div class="rtext" id="celebText"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, doc, onSnapshot, updateDoc, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAMKN1rwiMBrR0XFxUYH09M6yxPlQHhZhI",
+  authDomain: "mingsoon-coupon.firebaseapp.com",
+  projectId: "mingsoon-coupon",
+  storageBucket: "mingsoon-coupon.firebasestorage.app",
+  messagingSenderId: "306496994985",
+  appId: "1:306496994985:web:8273eca34a761e356673b8"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ── 공통: 빙고 줄 계산 ──
+const LINES = [], LINE_NAMES = [];
+for (let r = 0; r < 5; r++) { LINES.push([0,1,2,3,4].map(c => r*5+c)); LINE_NAMES.push(`가로 ${r+1}번째 줄`); }
+for (let c = 0; c < 5; c++) { LINES.push([0,1,2,3,4].map(r => r*5+c)); LINE_NAMES.push(`세로 ${c+1}번째 줄`); }
+LINES.push([0,6,12,18,24], [4,8,12,16,20]); LINE_NAMES.push('대각선 ↘', '대각선 ↙');
+const ORD = ['첫','두','세','네','다섯','여섯','일곱','여덟','아홉','열','열한','열두'];
+const ordLabel = n => `${ORD[n-1] || n} 번째 빙고`;
+const LINE_COLORS = ['#f59e0b','#10b981','#ef4444','#8b5cf6','#06b6d4','#ec4899','#84cc16','#f97316','#6366f1','#14b8a6','#e11d48','#0ea5e9'];
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const $ = id => document.getElementById(id);
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let toastTimer;
+function toast(msg) {
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+// 완성된 줄을 완성된 순서대로 (그 줄의 마지막 체크 시각 기준)
+function bingoOrder(cells) {
+  const t = c => (c && c.checkedAt && c.checkedAt.toMillis) ? c.checkedAt.toMillis() : 0;
+  return LINES.map((l, li) => ({ li, cells: l, done: l.every(i => cells[i] && cells[i].checked), at: Math.max(...l.map(i => t(cells[i]))) }))
+    .filter(x => x.done)
+    .sort((a, b) => a.at - b.at || a.li - b.li)
+    .map((x, k) => ({ ...x, n: k + 1, color: LINE_COLORS[k % LINE_COLORS.length] }));
+}
+
+// 빙고판 위에 줄 긋기 + 번호
+function drawBingoLines(boardEl, order) {
+  let svg = boardEl.querySelector('.bingo-svg');
+  if (!svg) { svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', 'bingo-svg'); boardEl.appendChild(svg); }
+  const cellsEl = boardEl.querySelectorAll('.cell');
+  if (cellsEl.length < 25 || !order.length) { svg.innerHTML = ''; return; }
+  const br = boardEl.getBoundingClientRect();
+  const ctr = i => { const r = cellsEl[i].getBoundingClientRect(); return [r.left - br.left + r.width/2, r.top - br.top + r.height/2, r.width]; };
+  svg.setAttribute('viewBox', `0 0 ${br.width} ${br.height}`);
+  let out = '';
+  order.forEach(o => {
+    const [x1, y1, w] = ctr(o.cells[0]), [x2, y2] = ctr(o.cells[4]);
+    const sw = Math.max(4, w * 0.07);
+    out += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${o.color}" stroke-width="${sw}" stroke-linecap="round" opacity=".6"/>`;
+  });
+  // 번호는 줄 위에 따로 (줄 시작점에서 살짝 안쪽)
+  order.forEach(o => {
+    const [x1, y1, w] = ctr(o.cells[0]), [x2, y2] = ctr(o.cells[4]);
+    const k = 0.12, bx = x1 + (x2 - x1) * k, by = y1 + (y2 - y1) * k;
+    const r = Math.max(9, w * 0.14);
+    out += `<circle cx="${bx}" cy="${by}" r="${r}" fill="${o.color}" stroke="white" stroke-width="2.5"/>
+      <text x="${bx}" y="${by}" text-anchor="middle" dominant-baseline="central" fill="white" font-size="${r*1.15}" font-weight="800" font-family="Pretendard, sans-serif">${o.n}</text>`;
+  });
+  svg.innerHTML = out;
+}
+
+function renderBingoLog(el, order, rewards) {
+  el.innerHTML = order.map(o => {
+    const rw = (rewards || []).find(r => r.lines === o.n);
+    return `<span class="blog"><span class="num" style="background:${o.color}">${o.n}</span><b>${ordLabel(o.n)}</b>${LINE_NAMES[o.li]}${rw ? `<span class="rwt">${rw.final ? '최종 보상' : '보상'} ${esc(rw.text || '')}</span>` : ''}</span>`;
+  }).join('');
+}
+
+function renderRewardChips(el, rewards, n) {
+  el.innerHTML = (rewards || []).slice().sort((a,b)=>a.lines-b.lines).map(r =>
+    `<div class="rw${r.final?' final':''}${n>=r.lines?' hit':''}"><span class="n">${r.final?'최종 · ':''}${ordLabel(r.lines)}</span>${esc(r.text||'보상')}</div>`
+  ).join('');
+}
+
+let celebTimer;
+function celebrate(o, rewards) {
+  const rw = (rewards || []).find(r => r.lines === o.n);
+  $('celebBox').classList.toggle('final', !!(rw && rw.final));
+  $('celebBig').textContent = (rw && rw.final) ? `최종 빙고!` : `${ordLabel(o.n)}!`;
+  $('celebLine').textContent = (rw && rw.final ? `${ordLabel(o.n)} · ` : '') + LINE_NAMES[o.li];
+  $('celebText').textContent = rw ? `보상: ${rw.text || ''}` : '';
+  $('celebModal').classList.remove('hidden');
+  clearTimeout(celebTimer); celebTimer = setTimeout(() => $('celebModal').classList.add('hidden'), 4000);
+}
+
+// ── 태그 색: 노래 목록에 등록된 순서대로 색상환을 골고루 나눠서 겹치지 않게 ──
+const tagKey = t => String(t).toLowerCase().replace(/[\s\-_.·・]/g, '');
+const TAG_IDX = new Map();
+function setTagOrder(songs) {
+  TAG_IDX.clear();
+  const ts = s => (s.createdAt && s.createdAt.toMillis) ? s.createdAt.toMillis() : Number.MAX_SAFE_INTEGER;
+  songs.slice().sort((a, b) => ts(a) - ts(b) || String(a.title).localeCompare(String(b.title), 'ko'))
+    .forEach(s => (s.tags || []).forEach(t => { const k = tagKey(t); if (k && !TAG_IDX.has(k)) TAG_IDX.set(k, TAG_IDX.size); }));
+}
+function tagIndex(t) { const k = tagKey(t); if (!TAG_IDX.has(k)) TAG_IDX.set(k, TAG_IDX.size); return TAG_IDX.get(k); }
+function tagVars(t) {
+  const i = tagIndex(t);
+  const h = Math.round((i * 137.508 + 12) % 360);   // 황금각: 몇 개가 되든 이웃 색과 최대한 멀어짐
+  const tone = [[88, 91, 30], [70, 86, 28], [95, 94, 32]][Math.floor(i / 8) % 3]; // 8개마다 명도도 바꿔서 더 구분
+  return `--tb:hsl(${h} ${tone[0]}% ${tone[1]}%);--tf:hsl(${h} 55% ${tone[2]}%);--tl:hsl(${h} 60% 74%)`;
+}
+const tagChip = t => `<span class="tchip" style="${tagVars(t)}">${esc(t)}</span>`;
+
+// ── 부른 순서 기록 ──
+function renderSungLog(el, songs, cells) {
+  const t = s => (s.sungAt && s.sungAt.toMillis) ? s.sungAt.toMillis() : 0;
+  const list = songs.filter(s => s.used).sort((a, b) => t(a) - t(b) || String(a.title).localeCompare(String(b.title), 'ko'));
+  const where = {}; cells.forEach(c => { if (c.songId) where[c.songId] = c; });
+  // 어느 곡이 몇 번째 빙고를 완성했는지 (그 줄에서 마지막으로 체크된 칸)
+  const ct = c => (c && c.checkedAt && c.checkedAt.toMillis) ? c.checkedAt.toMillis() : 0;
+  const made = {};
+  bingoOrder(cells).forEach(o => {
+    const last = o.cells.reduce((m, i) => ct(cells[i]) >= ct(cells[m]) ? i : m, o.cells[0]);
+    const sid = cells[last] && cells[last].songId;
+    if (sid) (made[sid] = made[sid] || []).push(o);
+  });
+  $('sungCount').textContent = list.length ? `${list.length}곡` : '';
+  if (!list.length) { el.innerHTML = '<div class="empty">아직 부른 곡이 없어요.</div>'; return; }
+  const hm = s => { if (!t(s)) return ''; const d = new Date(t(s)); return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; };
+  el.innerHTML = list.map((s, i) => {
+    const c = where[s.id];
+    return `<li class="sung">
+      <span class="sn">${i + 1}</span>
+      <div class="sbody">
+        <div class="stitle">${esc(s.title)}${s.artist ? `<span class="sart">${esc(s.artist)}</span>` : ''}</div>
+        <div class="smeta">${c ? `<span class="scell">${esc(c.cond)} 칸</span>` : '<span class="scell out">빙고판 밖</span>'}${(made[s.id] || []).map(o => `<span class="sbingo" style="background:${o.color}">${ordLabel(o.n)}</span>`).join('')}</div>
+      </div>
+      <span class="stime">${hm(s)}</span>
+    </li>`;
+  }).join('');
+}
+
+
+// Firebase 오류를 알아보기 쉽게
+function fbErr(e) {
+  const code = (e && e.code) || '';
+  if (code.includes('permission-denied')) return '권한이 없어요. Firestore 규칙을 최신 버전으로 게시했는지 확인해 주세요.';
+  if (code.includes('not-found')) return '설정 문서가 없어요.';
+  if (code.includes('unavailable')) return '인터넷 연결을 확인해 주세요.';
+  return `오류: ${code || (e && e.message) || e}`;
+}
+window.addEventListener('unhandledrejection', ev => { console.error(ev.reason); toast(fbErr(ev.reason)); });
+
+
+const S = { cells: [], songs: [], meta: null, q: '', tag: '전체', sel: null, prevCount: null, loaded: false };
+
+const isOpen = () => !!S.meta && S.meta.locked === false;
+function placedMap() { const m = {}; S.cells.forEach((c, i) => { if (c.songId) m[c.songId] = i; }); return m; }
+const rewards = () => (S.meta && S.meta.rewards) || [];
+
+// ── 렌더 ──
+function renderStatus() {
+  const pill = $('lockPill');
+  if (!S.meta) { pill.className = 'pill lock'; pill.innerHTML = '<span class="dot"></span>준비 중'; }
+  else if (isOpen()) { pill.className = 'pill open'; pill.innerHTML = '<span class="dot"></span>선곡 가능'; }
+  else { pill.className = 'pill lock'; pill.innerHTML = '🔒 잠김'; }
+  $('guide').classList.toggle('show', isOpen());
+}
+function renderBoard() {
+  const b = $('board');
+  if (S.loaded && S.cells.length < 25) { b.innerHTML = '<div class="board-empty" style="grid-column:1/-1">빙고판을 준비하고 있어요.</div>'; $('bingoLog').innerHTML=''; return; }
+  if (!S.cells.length) return;
+  const pick = isOpen() && S.sel;
+  b.innerHTML = S.cells.map((c, i) => {
+    const cls = ['cell'];
+    if (c.songId) cls.push('placed');
+    if (c.checked) cls.push('checked');
+    if (pick && !c.songId) cls.push('pickable');
+    return `<div class="${cls.join(' ')}" data-idx="${i}">
+      <div class="cond">${esc(c.cond)}</div>
+      ${c.songId ? `<div class="song">${esc(c.song)}</div>${c.artist?`<div class="artist">${esc(c.artist)}</div>`:''}` : ''}
+      <span class="stamp">✓</span>
+    </div>`;
+  }).join('');
+  const order = bingoOrder(S.cells);
+  $('lineNum').textContent = order.length;
+  renderRewardChips($('rewards'), rewards(), order.length);
+  renderBingoLog($('bingoLog'), order, rewards());
+  requestAnimationFrame(() => drawBingoLines(b, order));
+}
+function renderTags() {
+  const set = new Set();
+  S.songs.forEach(s => (s.tags||[]).forEach(t => set.add(t)));
+  const list = ['전체', ...[...set].sort((a,b)=>a.localeCompare(b,'ko'))];
+  if (!list.includes(S.tag)) S.tag = '전체';
+  $('tags').innerHTML = list.length > 1 ? list.map(t => `<button class="tag${t===S.tag?' on':''}" data-tag="${esc(t)}"${t==='전체'?'':` style="${tagVars(t)}"`}>${esc(t)}</button>`).join('') : '';
+}
+function renderSongs() {
+  const pm = placedMap(), q = S.q.trim().toLowerCase();
+  const list = S.songs.filter(s => {
+    if (S.tag !== '전체' && !(s.tags||[]).includes(S.tag)) return false;
+    if (q && !(`${s.title} ${s.artist||''}`.toLowerCase().includes(q))) return false;
+    return true;
+  }).sort((a,b) => {
+    const oa = (a.used || pm[a.id]!==undefined) ? 1 : 0, ob = (b.used || pm[b.id]!==undefined) ? 1 : 0;
+    return oa - ob || a.title.localeCompare(b.title, 'ko');
+  });
+  const el = $('songs');
+  if (!S.songs.length) { el.innerHTML = '<div class="empty">아직 등록된 곡이 없어요.</div>'; return; }
+  if (!list.length) { el.innerHTML = '<div class="empty">검색 결과가 없어요.</div>'; return; }
+  el.innerHTML = list.map(s => {
+    const used = s.used, onb = pm[s.id] !== undefined, off = used || onb;
+    const badge = used ? '<span class="badge used">부른 곡</span>' : onb ? '<span class="badge onboard">빙고판</span>' : '';
+    return `<div class="song-item${off?' off':''}${used?' used':''}${S.sel===s.id?' sel':''}" data-id="${s.id}">
+      ${off ? '' : '<span class="grip">⋮⋮</span>'}
+      <div style="min-width:0"><div class="t">${esc(s.title)}</div>${s.artist?`<div class="a">${esc(s.artist)}</div>`:''}${(s.tags&&s.tags.length)?`<div class="tg">${s.tags.map(tagChip).join('')}</div>`:''}</div>
+      ${badge}
+    </div>`;
+  }).join('');
+}
+function renderAll() { renderStatus(); renderBoard(); renderTags(); renderSongs(); renderSungLog($('sungLog'), S.songs, S.cells); }
+window.addEventListener('resize', () => { if (S.cells.length >= 25) drawBingoLines($('board'), bingoOrder(S.cells)); });
+
+// ── 선곡 ──
+let pending = null;
+function tryPlace(idx, songId) {
+  if (!isOpen()) return toast('지금은 빙고판이 잠겨 있어요.');
+  const c = S.cells[idx]; if (!c) return;
+  if (c.checked) return toast('이미 부른 칸이에요.');
+  if (c.songId) return toast('이미 곡이 들어간 칸이에요. 빈 칸에 넣어 주세요.');
+  const s = S.songs.find(x => x.id === songId); if (!s) return;
+  if (s.used) return toast('이미 부른 곡은 다시 고를 수 없어요.');
+  if (placedMap()[s.id] !== undefined) return toast('이미 빙고판에 있는 곡이에요.');
+  pending = { idx, song: s };
+  $('confirmText').innerHTML = `[${esc(c.cond)}] 칸에<br><b>${esc(s.title)}</b>${s.artist?` (${esc(s.artist)})`:''}`;
+  $('confirmModal').classList.remove('hidden');
+}
+$('confirmNo').onclick = () => { pending = null; $('confirmModal').classList.add('hidden'); };
+$('confirmYes').onclick = async () => {
+  if (!pending) return;
+  const { idx, song } = pending; pending = null;
+  $('confirmModal').classList.add('hidden');
+  try {
+    await updateDoc(doc(db, 'bingoCells', S.cells[idx].id), { songId: song.id, song: song.title, artist: song.artist || '', placedAt: serverTimestamp() });
+    S.sel = null; toast(`${song.title} 넣었어요!`);
+  } catch (e) {
+    console.error(e);
+    const code = (e && e.code) || '';
+    if (code.includes('permission-denied') && isOpen()) toast('넣지 못했어요. 다른 사람이 먼저 넣었거나, 관리자 설정(Firestore 규칙)을 확인해야 해요.');
+    else toast('넣지 못했어요. ' + fbErr(e));
+  }
+};
+
+$('search').addEventListener('input', e => { S.q = e.target.value; renderSongs(); });
+$('tags').addEventListener('click', e => { const t = e.target.closest('.tag'); if (!t) return; S.tag = t.dataset.tag; renderTags(); renderSongs(); });
+$('board').addEventListener('click', e => { const cell = e.target.closest('.cell'); if (cell && S.sel) tryPlace(+cell.dataset.idx, S.sel); });
+
+// ── 드래그 (마우스 + 터치 길게 누르기) ──
+let drag = null, ghost = null, hoverCell = null;
+function startDrag(x, y) {
+  drag.started = true;
+  const s = S.songs.find(v => v.id === drag.id);
+  ghost = document.createElement('div'); ghost.className = 'ghost'; ghost.textContent = s ? s.title : '';
+  document.body.appendChild(ghost); moveDrag(x, y);
+  if (navigator.vibrate) try { navigator.vibrate(15); } catch(_){}
+}
+function moveDrag(x, y) {
+  ghost.style.left = x + 'px'; ghost.style.top = y + 'px';
+  const el = document.elementFromPoint(x, y), cell = el && el.closest('.cell');
+  if (hoverCell && hoverCell !== cell) hoverCell.classList.remove('target');
+  hoverCell = cell || null; if (hoverCell) hoverCell.classList.add('target');
+}
+function endDrag() {
+  if (ghost) ghost.remove(); ghost = null;
+  if (hoverCell) hoverCell.classList.remove('target'); hoverCell = null;
+  if (drag && drag.timer) clearTimeout(drag.timer); drag = null;
+}
+$('songs').addEventListener('pointerdown', e => {
+  const item = e.target.closest('.song-item'); if (!item) return;
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  drag = { id: item.dataset.id, off: item.classList.contains('off'), x: e.clientX, y: e.clientY, started: false, type: e.pointerType, timer: null };
+  if (e.pointerType !== 'mouse' && !drag.off) drag.timer = setTimeout(() => { if (drag && !drag.started) startDrag(drag.x, drag.y); }, 220);
+});
+window.addEventListener('pointermove', e => {
+  if (!drag) return;
+  if (!drag.started) {
+    const d = Math.hypot(e.clientX - drag.x, e.clientY - drag.y);
+    if (drag.type === 'mouse') { if (d > 5 && !drag.off) startDrag(e.clientX, e.clientY); }
+    else if (d > 10) endDrag();
+    return;
+  }
+  moveDrag(e.clientX, e.clientY);
+});
+window.addEventListener('pointerup', () => {
+  if (!drag) return;
+  if (drag.started) {
+    const idx = hoverCell ? +hoverCell.dataset.idx : null, id = drag.id;
+    endDrag(); if (idx !== null) tryPlace(idx, id);
+  } else {
+    const id = drag.id, off = drag.off; endDrag();
+    if (off) return toast('이미 빙고판에 있거나 부른 곡이에요.');
+    S.sel = S.sel === id ? null : id; renderSongs(); renderBoard();
+    if (S.sel && !isOpen()) toast('지금은 빙고판이 잠겨 있어요.');
+  }
+});
+window.addEventListener('pointercancel', endDrag);
+document.addEventListener('touchmove', e => { if (drag && drag.started) e.preventDefault(); }, { passive: false });
+$('songs').addEventListener('contextmenu', e => e.preventDefault());
+$('celebModal').onclick = () => $('celebModal').classList.add('hidden');
+
+// ── 실시간 ──
+onSnapshot(collection(db, 'bingoCells'), snap => {
+  S.cells = snap.docs.map(d => ({ id: d.id, ...d.data({ serverTimestamps: 'estimate' }) })).sort((a,b) => a.idx - b.idx);
+  S.loaded = true;
+  const order = bingoOrder(S.cells);
+  if (S.prevCount !== null && order.length > S.prevCount) celebrate(order[order.length - 1], rewards());
+  S.prevCount = order.length;
+  renderAll();
+}, err => { $('board').innerHTML = `<div class="board-empty" style="grid-column:1/-1">연결 오류: ${esc(err.message)}</div>`; });
+
+onSnapshot(collection(db, 'bingoSongs'), snap => {
+  S.songs = snap.docs.map(d => ({ id: d.id, ...d.data({ serverTimestamps: 'estimate' }) }));
+  setTagOrder(S.songs);
+  renderSungLog($('sungLog'), S.songs, S.cells);
+  if (S.sel && !S.songs.find(s => s.id === S.sel)) S.sel = null;
+  renderTags(); renderSongs();
+});
+
+onSnapshot(doc(db, 'bingoMeta', 'config'), snap => {
+  S.meta = snap.exists() ? snap.data() : null;
+  if (S.meta && S.meta.locked !== false) S.sel = null;
+  renderAll();
+}, err => { console.error(err); toast('빙고판 상태를 불러오지 못했어요. ' + fbErr(err)); });
+</script>
+</body>
+</html>
