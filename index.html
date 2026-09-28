@@ -171,34 +171,80 @@ main{max-width:1120px;margin:0 auto;padding:20px 16px 48px;}
 .sung .stime{font-size:11px;color:var(--g400);flex:none;}
 .sung-list .empty{grid-column:1/-1;}
 
+/* 칸 선택/삭제 */
+.cell.picked{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-lt);}
+.cell .xdel{position:absolute;top:5px;right:5px;width:20px;height:20px;border-radius:50%;border:none;background:var(--g100);color:var(--g500);font-size:14px;line-height:20px;text-align:center;cursor:pointer;padding:0;z-index:4;font-family:inherit;}
+.cell .xdel:hover{background:var(--red-lt);color:var(--red);}
+.cell.movable{cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;}
+.cell.placed .cond{padding-right:18px;}
+.pool.droptarget{border-color:var(--red);box-shadow:0 0 0 3px var(--red-lt);}
+.pool.droptarget::after{content:'여기에 놓으면 빙고판에서 빠져요';position:absolute;left:14px;right:14px;top:10px;background:var(--red);color:white;font-size:13px;font-weight:600;text-align:center;padding:8px;border-radius:8px;}
+.pool{position:sticky;}
+@media(max-width:860px){.pool{position:relative;}}
+@media(max-width:560px){.cell .xdel{width:16px;height:16px;line-height:16px;font-size:11px;top:2px;right:2px;}}
+.sung .sops{display:flex;gap:3px;flex:none;}
+.sung .sops button{border:1px solid var(--g200);background:white;border-radius:6px;font-size:12px;width:26px;height:26px;cursor:pointer;color:var(--g600);font-family:inherit;padding:0;}
+.sung .sops button:hover{background:var(--g100);}
+.sung .sops button:disabled{opacity:.35;cursor:default;}
+.sung .sops button.del:hover{background:var(--red-lt);color:var(--red);}
+
+.mybar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:white;border:1px solid var(--g200);border-radius:12px;padding:12px 14px;margin-bottom:12px;}
+.mybar label{font-size:14px;font-weight:700;}
+.mybar .nickin{flex:1;min-width:140px;max-width:260px;padding:9px 12px;border:1.5px solid var(--g200);border-radius:8px;font-size:15px;font-family:inherit;background:var(--g50);outline:none;}
+.mybar .nickin:focus{border-color:var(--blue);background:white;}
+.mybar .nickin.need{border-color:var(--amber);background:#fffbeb;}
+.mybar .nickstate{font-size:13px;color:var(--g500);}
+.btn-blue{background:var(--blue);color:white;border:none;border-radius:8px;padding:9px 16px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.btn-blue:hover{background:var(--blue-dk);}
+.btn-line{background:white;color:var(--g600);border:1px solid var(--g200);border-radius:8px;padding:9px 14px;font-size:14px;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.btn-line:hover{background:var(--g100);}
+.board-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.board-actions .spacer{flex:1;}
+.shot-box{background:white;border-radius:14px;padding:18px;width:100%;max-width:460px;max-height:92vh;overflow:auto;}
+.shot-box h3{font-size:16px;font-weight:700;margin-bottom:10px;}
+.shot-box img{width:100%;border-radius:10px;border:1px solid var(--g200);display:block;}
+.shot-box .note{font-size:12px;color:var(--g500);margin-top:8px;line-height:1.5;}
 </style>
 </head>
 <body>
 <header>
   <div class="logo">밍쑨 <em>노래</em> 빙고</div>
-  <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:var(--g300);">v6</span><a href="admin.html" class="btn-sm">관리자</a></div>
+  <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:var(--g300);">v7</span><a href="admin.html" class="btn-sm">관리자</a></div>
 </header>
 <main>
+  <div class="mybar">
+    <label for="nick">내 닉네임</label>
+    <input class="nickin" id="nick" maxlength="20" placeholder="닉네임을 적어 주세요" autocomplete="off">
+    <button class="btn-blue" id="nickSave">저장</button>
+    <span class="nickstate" id="nickState"></span>
+  </div>
+
   <div class="statusbar">
     <span class="pill lock" id="lockPill"><span class="dot"></span>불러오는 중</span>
-    <span class="linecount">빙고 <b id="lineNum">0</b>줄</span>
+    <span class="linecount">내 빙고 <b id="lineNum">0</b>줄</span>
   </div>
-  <div class="guide" id="guide">노래 목록에서 곡을 끌어 조건에 맞는 빈 칸에 넣어 주세요. 곡을 누른 뒤 칸을 눌러도 돼요.</div>
+  <div class="guide" id="guide">노래 목록에서 곡을 끌어 조건에 맞는 칸에 넣어 주세요. 넣은 곡은 끌어서 다른 칸으로 옮기거나, ×를 눌러 뺄 수 있어요.</div>
   <div class="rewards" id="rewards"></div>
 
   <div class="layout">
     <section class="board-wrap">
       <div class="board" id="board"><div class="board-empty" style="grid-column:1/-1">불러오는 중...</div></div>
       <div class="bingo-log" id="bingoLog"></div>
+      <div class="board-actions">
+        <button class="btn-blue" id="shotBtn">사진으로 저장</button>
+        <span class="spacer"></span>
+        <button class="btn-line" id="clearBtn">내 빙고판 비우기</button>
+      </div>
     </section>
-    <aside class="pool">
+    <aside class="pool" id="pool">
       <h2>노래 목록</h2>
-      <div class="sub">빙고판이 열려 있을 때 곡을 끌어서 빈 칸에 놓을 수 있어요.</div>
+      <div class="sub">곡을 끌어서 칸에 놓거나, 곡을 누른 뒤 칸을 눌러 주세요.</div>
       <input class="search" id="search" placeholder="제목, 가수 검색">
       <div class="tags" id="tags"></div>
       <div class="songs" id="songs"><div class="empty">불러오는 중...</div></div>
     </aside>
   </div>
+
   <section class="sung-wrap">
     <h2>부른 순서 <span id="sungCount"></span></h2>
     <ol class="sung-list" id="sungLog"><div class="empty">불러오는 중...</div></ol>
@@ -207,11 +253,23 @@ main{max-width:1120px;margin:0 auto;padding:20px 16px 48px;}
 
 <div class="overlay hidden" id="confirmModal">
   <div class="modal">
-    <h3>이 칸에 넣을까요?</h3>
+    <h3 id="confirmTitle">확인</h3>
     <p id="confirmText"></p>
     <div class="mbtns">
       <button class="btn-cancel" id="confirmNo">취소</button>
-      <button class="btn-confirm" id="confirmYes">넣기</button>
+      <button class="btn-confirm" id="confirmYes">확인</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="shotModal">
+  <div class="shot-box">
+    <h3>내 빙고판 사진</h3>
+    <img id="shotImg" alt="내 빙고판">
+    <div class="note">휴대폰에서는 사진을 길게 눌러 저장할 수도 있어요.</div>
+    <div class="mbtns">
+      <button class="btn-cancel" id="shotClose">닫기</button>
+      <a class="btn-confirm" id="shotDl" style="text-align:center;text-decoration:none;padding:10px;border-radius:8px;font-size:14px;font-weight:500;flex:1;">사진 저장</a>
     </div>
   </div>
 </div>
@@ -228,7 +286,7 @@ main{max-width:1120px;margin:0 auto;padding:20px 16px 48px;}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, doc, onSnapshot, updateDoc, serverTimestamp }
+import { getFirestore, collection, doc, onSnapshot, setDoc, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -337,78 +395,164 @@ function tagVars(t) {
 }
 const tagChip = t => `<span class="tchip" style="${tagVars(t)}">${esc(t)}</span>`;
 
-// ── 부른 순서 기록 ──
-function renderSungLog(el, songs, cells) {
-  const t = s => (s.sungAt && s.sungAt.toMillis) ? s.sungAt.toMillis() : 0;
-  const list = songs.filter(s => s.used).sort((a, b) => t(a) - t(b) || String(a.title).localeCompare(String(b.title), 'ko'));
-  const where = {}; cells.forEach(c => { if (c.songId) where[c.songId] = c; });
-  // 어느 곡이 몇 번째 빙고를 완성했는지 (그 줄에서 마지막으로 체크된 칸)
-  const ct = c => (c && c.checkedAt && c.checkedAt.toMillis) ? c.checkedAt.toMillis() : 0;
-  const made = {};
-  bingoOrder(cells).forEach(o => {
-    const last = o.cells.reduce((m, i) => ct(cells[i]) >= ct(cells[m]) ? i : m, o.cells[0]);
-    const sid = cells[last] && cells[last].songId;
-    if (sid) (made[sid] = made[sid] || []).push(o);
+// ── 개인 빙고판 계산 ──
+const tms = ts => (ts && ts.toMillis) ? ts.toMillis() : 0;
+// 조건 25칸 + 곡 id 25개 → 칸 정보 (부른 곡이면 체크)
+function composeCells(conds, ids, songMap) {
+  return conds.map((c, i) => {
+    const s = ids && ids[i] ? songMap.get(ids[i]) : null;
+    return { cond: c.cond, songId: s ? s.id : null, song: s ? s.title : '', artist: s ? (s.artist || '') : '', checked: !!(s && s.used), checkedAt: s ? s.sungAt : null };
   });
-  $('sungCount').textContent = list.length ? `${list.length}곡` : '';
-  if (!list.length) { el.innerHTML = '<div class="empty">아직 부른 곡이 없어요.</div>'; return; }
-  const hm = s => { if (!t(s)) return ''; const d = new Date(t(s)); return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; };
-  el.innerHTML = list.map((s, i) => {
-    const c = where[s.id];
-    return `<li class="sung">
-      <span class="sn">${i + 1}</span>
-      <div class="sbody">
-        <div class="stitle">${esc(s.title)}${s.artist ? `<span class="sart">${esc(s.artist)}</span>` : ''}</div>
-        <div class="smeta">${c ? `<span class="scell">${esc(c.cond)} 칸</span>` : '<span class="scell out">빙고판 밖</span>'}${(made[s.id] || []).map(o => `<span class="sbingo" style="background:${o.color}">${ordLabel(o.n)}</span>`).join('')}</div>
-      </div>
-      <span class="stime">${hm(s)}</span>
-    </li>`;
-  }).join('');
+}
+// 부른 곡을 부른 순서대로
+function sungList(songs) {
+  return songs.filter(s => s.used).sort((a, b) => tms(a.sungAt) - tms(b.sungAt) || String(a.title).localeCompare(String(b.title), 'ko'));
+}
+const hhmm = ts => { const m = tms(ts); if (!m) return ''; const d = new Date(m); return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; };
+// 어떤 곡이 몇 번째 빙고를 완성했는지
+function bingoMadeBy(cells, order) {
+  const made = {};
+  order.forEach(o => {
+    const last = o.cells.reduce((m, i) => tms(cells[i].checkedAt) >= tms(cells[m].checkedAt) ? i : m, o.cells[0]);
+    const sid = cells[last].songId; if (sid) (made[sid] = made[sid] || []).push(o);
+  });
+  return made;
 }
 
-
-// Firebase 오류를 알아보기 쉽게
+// ── Firebase 오류를 알아보기 쉽게 ──
 function fbErr(e) {
   const code = (e && e.code) || '';
-  if (code.includes('permission-denied')) return '권한이 없어요. Firestore 규칙을 최신 버전으로 게시했는지 확인해 주세요.';
-  if (code.includes('not-found')) return '설정 문서가 없어요.';
+  if (code.includes('permission-denied')) return '권한이 없어요. 빙고판이 잠겨 있거나 Firestore 규칙이 최신이 아니에요.';
   if (code.includes('unavailable')) return '인터넷 연결을 확인해 주세요.';
   return `오류: ${code || (e && e.message) || e}`;
 }
 window.addEventListener('unhandledrejection', ev => { console.error(ev.reason); toast(fbErr(ev.reason)); });
 
 
-const S = { cells: [], songs: [], meta: null, q: '', tag: '전체', sel: null, prevCount: null, loaded: false };
+// ── 내 기기 정보 (빙고판 id, 닉네임) ──
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch {} }
+};
+let boardId = store.get('msbingo-board-id');
+if (!boardId || boardId.length < 16) {
+  const a = new Uint8Array(16); crypto.getRandomValues(a);
+  boardId = 'b' + [...a].map(x => x.toString(36).padStart(2, '0')).join('').slice(0, 23);
+  store.set('msbingo-board-id', boardId);
+}
+const boardRef = doc(db, 'bingoBoards', boardId);
+
+const S = { conds: [], songs: [], songMap: new Map(), meta: null, board: null, loaded: { conds: false, songs: false, board: false },
+  nick: store.get('msbingo-nick') || '', q: '', tag: '전체', sel: null, prevCount: null };
 
 const isOpen = () => !!S.meta && S.meta.locked === false;
-function placedMap() { const m = {}; S.cells.forEach((c, i) => { if (c.songId) m[c.songId] = i; }); return m; }
 const rewards = () => (S.meta && S.meta.rewards) || [];
+const myIds = () => (S.board && Array.isArray(S.board.cells) && S.board.cells.length === 25) ? S.board.cells.slice() : Array(25).fill(null);
+const cellsNow = () => composeCells(S.conds, myIds(), S.songMap);
+function myIndexOf(songId) { return myIds().indexOf(songId); }
+function ask(title, text, ok = '확인') {
+  return new Promise(res => {
+    $('confirmTitle').textContent = title; $('confirmText').innerHTML = text; $('confirmYes').textContent = ok;
+    $('confirmModal').classList.remove('hidden');
+    const done = v => { $('confirmModal').classList.add('hidden'); $('confirmYes').onclick = $('confirmNo').onclick = null; res(v); };
+    $('confirmYes').onclick = () => done(true); $('confirmNo').onclick = () => done(false);
+  });
+}
+
+// ── 닉네임 ──
+$('nick').value = S.nick;
+function renderNick() {
+  $('nick').classList.toggle('need', !S.nick);
+  $('nickState').textContent = S.nick ? '' : '닉네임을 적어야 빙고판을 채울 수 있어요.';
+}
+async function saveNick() {
+  const v = $('nick').value.trim().slice(0, 20);
+  if (!v) { toast('닉네임을 적어 주세요.'); $('nick').focus(); return; }
+  if (S.board && v !== S.board.nick) {
+    if (!isOpen()) { toast('빙고판이 잠겨 있어서 지금은 닉네임을 바꿀 수 없어요.'); $('nick').value = S.nick; return; }
+    try { await setDoc(boardRef, { nick: v, cells: myIds(), updatedAt: serverTimestamp() }); }
+    catch (e) { toast('닉네임을 저장하지 못했어요. ' + fbErr(e)); return; }
+  }
+  S.nick = v; store.set('msbingo-nick', v); renderNick(); $('nick').blur();
+  toast(`${v}님, 반가워요!`);
+}
+$('nickSave').onclick = saveNick;
+$('nick').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); saveNick(); } });
+
+// ── 내 빙고판 저장 ──
+function canEdit() {
+  if (!isOpen()) { toast('지금은 빙고판이 잠겨 있어요.'); return false; }
+  if (!S.nick) { toast('닉네임을 먼저 적고 저장해 주세요.'); $('nick').focus(); return false; }
+  return true;
+}
+async function commit(ids) {
+  S.board = { ...(S.board || {}), nick: S.nick, cells: ids };
+  S.sel = null; renderAll();
+  try { await setDoc(boardRef, { nick: S.nick, cells: ids, updatedAt: serverTimestamp() }); }
+  catch (e) { console.error(e); toast('저장하지 못했어요. ' + fbErr(e)); }
+}
+function placeSong(idx, songId) {
+  if (!canEdit()) return;
+  const s = S.songMap.get(songId); if (!s) return;
+  if (s.used) return toast('이미 부른 곡은 넣을 수 없어요.');
+  const ids = myIds(), c = cellsNow()[idx];
+  if (c.checked) return toast('이미 부른 칸은 바꿀 수 없어요.');
+  const at = ids.indexOf(songId);
+  if (at === idx) return;
+  if (at !== -1) return moveCell(at, idx);
+  ids[idx] = songId; commit(ids);
+}
+function moveCell(from, to) {
+  if (!canEdit() || from === to) return;
+  const ids = myIds(), cs = cellsNow();
+  if (cs[from].checked || cs[to].checked) return toast('부른 곡이 있는 칸은 옮길 수 없어요.');
+  [ids[from], ids[to]] = [ids[to], ids[from]];
+  commit(ids);
+}
+function removeCell(idx) {
+  if (!canEdit()) return;
+  const ids = myIds(), c = cellsNow()[idx];
+  if (!c.songId) return;
+  if (c.checked) return toast('부른 곡은 뺄 수 없어요.');
+  ids[idx] = null; commit(ids);
+}
+$('clearBtn').onclick = async () => {
+  if (!canEdit()) return;
+  const cs = cellsNow();
+  if (!cs.some(c => c.songId && !c.checked)) return toast('뺄 곡이 없어요.');
+  if (!await ask('내 빙고판 비우기', '아직 부르지 않은 곡을 전부 뺄까요? 부른 곡은 그대로 남아요.', '비우기')) return;
+  commit(myIds().map((id, i) => cs[i].checked ? id : null));
+};
 
 // ── 렌더 ──
 function renderStatus() {
   const pill = $('lockPill');
   if (!S.meta) { pill.className = 'pill lock'; pill.innerHTML = '<span class="dot"></span>준비 중'; }
-  else if (isOpen()) { pill.className = 'pill open'; pill.innerHTML = '<span class="dot"></span>선곡 가능'; }
+  else if (isOpen()) { pill.className = 'pill open'; pill.innerHTML = '<span class="dot"></span>빙고판 채우는 중'; }
   else { pill.className = 'pill lock'; pill.innerHTML = '🔒 잠김'; }
   $('guide').classList.toggle('show', isOpen());
 }
 function renderBoard() {
   const b = $('board');
-  if (S.loaded && S.cells.length < 25) { b.innerHTML = '<div class="board-empty" style="grid-column:1/-1">빙고판을 준비하고 있어요.</div>'; $('bingoLog').innerHTML=''; return; }
-  if (!S.cells.length) return;
-  const pick = isOpen() && S.sel;
-  b.innerHTML = S.cells.map((c, i) => {
+  if (S.loaded.conds && S.conds.length < 25) { b.innerHTML = '<div class="board-empty" style="grid-column:1/-1">빙고판을 준비하고 있어요.</div>'; return; }
+  if (S.conds.length < 25) return;
+  const cells = cellsNow(), open = isOpen();
+  b.innerHTML = cells.map((c, i) => {
     const cls = ['cell'];
+    const movable = open && c.songId && !c.checked;
     if (c.songId) cls.push('placed');
     if (c.checked) cls.push('checked');
-    if (pick && !c.songId) cls.push('pickable');
+    if (movable) cls.push('movable');
+    if (S.sel && S.sel.from === 'cell' && S.sel.idx === i) cls.push('picked');
+    else if (S.sel && open && !c.checked) cls.push('pickable');
     return `<div class="${cls.join(' ')}" data-idx="${i}">
       <div class="cond">${esc(c.cond)}</div>
       ${c.songId ? `<div class="song">${esc(c.song)}</div>${c.artist?`<div class="artist">${esc(c.artist)}</div>`:''}` : ''}
       <span class="stamp">✓</span>
+      ${movable ? `<button class="xdel" data-x="${i}" aria-label="빼기">×</button>` : ''}
     </div>`;
   }).join('');
-  const order = bingoOrder(S.cells);
+  const order = bingoOrder(cells);
   $('lineNum').textContent = order.length;
   renderRewardChips($('rewards'), rewards(), order.length);
   renderBingoLog($('bingoLog'), order, rewards());
@@ -422,90 +566,109 @@ function renderTags() {
   $('tags').innerHTML = list.length > 1 ? list.map(t => `<button class="tag${t===S.tag?' on':''}" data-tag="${esc(t)}"${t==='전체'?'':` style="${tagVars(t)}"`}>${esc(t)}</button>`).join('') : '';
 }
 function renderSongs() {
-  const pm = placedMap(), q = S.q.trim().toLowerCase();
+  const mine = new Set(myIds().filter(Boolean)), q = S.q.trim().toLowerCase();
   const list = S.songs.filter(s => {
     if (S.tag !== '전체' && !(s.tags||[]).includes(S.tag)) return false;
     if (q && !(`${s.title} ${s.artist||''}`.toLowerCase().includes(q))) return false;
     return true;
   }).sort((a,b) => {
-    const oa = (a.used || pm[a.id]!==undefined) ? 1 : 0, ob = (b.used || pm[b.id]!==undefined) ? 1 : 0;
+    const oa = a.used ? 2 : mine.has(a.id) ? 1 : 0, ob = b.used ? 2 : mine.has(b.id) ? 1 : 0;
     return oa - ob || a.title.localeCompare(b.title, 'ko');
   });
   const el = $('songs');
   if (!S.songs.length) { el.innerHTML = '<div class="empty">아직 등록된 곡이 없어요.</div>'; return; }
   if (!list.length) { el.innerHTML = '<div class="empty">검색 결과가 없어요.</div>'; return; }
   el.innerHTML = list.map(s => {
-    const used = s.used, onb = pm[s.id] !== undefined, off = used || onb;
-    const badge = used ? '<span class="badge used">부른 곡</span>' : onb ? '<span class="badge onboard">빙고판</span>' : '';
-    return `<div class="song-item${off?' off':''}${used?' used':''}${S.sel===s.id?' sel':''}" data-id="${s.id}">
+    const used = s.used, onb = mine.has(s.id), off = used || onb;
+    const badge = used ? '<span class="badge used">부른 곡</span>' : onb ? '<span class="badge onboard">내 빙고판</span>' : '';
+    return `<div class="song-item${off?' off':''}${used?' used':''}${S.sel&&S.sel.from==='pool'&&S.sel.id===s.id?' sel':''}" data-id="${s.id}">
       ${off ? '' : '<span class="grip">⋮⋮</span>'}
       <div style="min-width:0"><div class="t">${esc(s.title)}</div>${s.artist?`<div class="a">${esc(s.artist)}</div>`:''}${(s.tags&&s.tags.length)?`<div class="tg">${s.tags.map(tagChip).join('')}</div>`:''}</div>
       ${badge}
     </div>`;
   }).join('');
 }
-function renderAll() { renderStatus(); renderBoard(); renderTags(); renderSongs(); renderSungLog($('sungLog'), S.songs, S.cells); }
-window.addEventListener('resize', () => { if (S.cells.length >= 25) drawBingoLines($('board'), bingoOrder(S.cells)); });
-
-// ── 선곡 ──
-let pending = null;
-function tryPlace(idx, songId) {
-  if (!isOpen()) return toast('지금은 빙고판이 잠겨 있어요.');
-  const c = S.cells[idx]; if (!c) return;
-  if (c.checked) return toast('이미 부른 칸이에요.');
-  if (c.songId) return toast('이미 곡이 들어간 칸이에요. 빈 칸에 넣어 주세요.');
-  const s = S.songs.find(x => x.id === songId); if (!s) return;
-  if (s.used) return toast('이미 부른 곡은 다시 고를 수 없어요.');
-  if (placedMap()[s.id] !== undefined) return toast('이미 빙고판에 있는 곡이에요.');
-  pending = { idx, song: s };
-  $('confirmText').innerHTML = `[${esc(c.cond)}] 칸에<br><b>${esc(s.title)}</b>${s.artist?` (${esc(s.artist)})`:''}`;
-  $('confirmModal').classList.remove('hidden');
+function renderSung() {
+  const list = sungList(S.songs), cells = S.conds.length === 25 ? cellsNow() : [];
+  const where = {}; cells.forEach(c => { if (c.songId) where[c.songId] = c; });
+  const made = cells.length ? bingoMadeBy(cells, bingoOrder(cells)) : {};
+  $('sungCount').textContent = list.length ? `${list.length}곡` : '';
+  const el = $('sungLog');
+  if (!list.length) { el.innerHTML = '<div class="empty">아직 부른 곡이 없어요.</div>'; return; }
+  el.innerHTML = list.map((s, i) => {
+    const c = where[s.id];
+    return `<li class="sung"><span class="sn">${i + 1}</span>
+      <div class="sbody"><div class="stitle">${esc(s.title)}${s.artist ? `<span class="sart">${esc(s.artist)}</span>` : ''}</div>
+      <div class="smeta">${c ? `<span class="scell">내 빙고판 ${esc(c.cond)} 칸</span>` : '<span class="scell out">내 빙고판에 없음</span>'}${(made[s.id] || []).map(o => `<span class="sbingo" style="background:${o.color}">${ordLabel(o.n)}</span>`).join('')}</div></div>
+      <span class="stime">${hhmm(s.sungAt)}</span></li>`;
+  }).join('');
 }
-$('confirmNo').onclick = () => { pending = null; $('confirmModal').classList.add('hidden'); };
-$('confirmYes').onclick = async () => {
-  if (!pending) return;
-  const { idx, song } = pending; pending = null;
-  $('confirmModal').classList.add('hidden');
-  try {
-    await updateDoc(doc(db, 'bingoCells', S.cells[idx].id), { songId: song.id, song: song.title, artist: song.artist || '', placedAt: serverTimestamp() });
-    S.sel = null; toast(`${song.title} 넣었어요!`);
-  } catch (e) {
-    console.error(e);
-    const code = (e && e.code) || '';
-    if (code.includes('permission-denied') && isOpen()) toast('넣지 못했어요. 다른 사람이 먼저 넣었거나, 관리자 설정(Firestore 규칙)을 확인해야 해요.');
-    else toast('넣지 못했어요. ' + fbErr(e));
-  }
-};
+function checkCelebrate() {
+  if (!S.loaded.conds || !S.loaded.songs || !S.loaded.board || S.conds.length < 25) return;
+  const order = bingoOrder(cellsNow());
+  if (S.prevCount !== null && order.length > S.prevCount) celebrate(order[order.length - 1], rewards());
+  S.prevCount = order.length;
+}
+function renderAll() { renderNick(); renderStatus(); renderBoard(); renderTags(); renderSongs(); renderSung(); }
+window.addEventListener('resize', () => { if (S.conds.length >= 25) drawBingoLines($('board'), bingoOrder(cellsNow())); });
 
 $('search').addEventListener('input', e => { S.q = e.target.value; renderSongs(); });
 $('tags').addEventListener('click', e => { const t = e.target.closest('.tag'); if (!t) return; S.tag = t.dataset.tag; renderTags(); renderSongs(); });
-$('board').addEventListener('click', e => { const cell = e.target.closest('.cell'); if (cell && S.sel) tryPlace(+cell.dataset.idx, S.sel); });
+
+// ── 칸 누르기 (탭으로 넣기 / 옮기기 / 빼기) ──
+let suppressClick = false;
+$('board').addEventListener('click', e => {
+  if (suppressClick) return;
+  const x = e.target.closest('.xdel'); if (x) { removeCell(+x.dataset.x); return; }
+  const cell = e.target.closest('.cell'); if (!cell) return;
+  const idx = +cell.dataset.idx;
+  if (S.sel && S.sel.from === 'pool') { placeSong(idx, S.sel.id); return; }
+  if (S.sel && S.sel.from === 'cell') {
+    if (S.sel.idx === idx) { S.sel = null; renderBoard(); renderSongs(); return; }
+    moveCell(S.sel.idx, idx); return;
+  }
+  if (cell.classList.contains('movable')) { S.sel = { from: 'cell', idx }; renderBoard(); toast('옮길 칸을 누르거나, ×로 뺄 수 있어요.'); }
+});
 
 // ── 드래그 (마우스 + 터치 길게 누르기) ──
-let drag = null, ghost = null, hoverCell = null;
+let drag = null, ghost = null, hover = null;
 function startDrag(x, y) {
   drag.started = true;
-  const s = S.songs.find(v => v.id === drag.id);
-  ghost = document.createElement('div'); ghost.className = 'ghost'; ghost.textContent = s ? s.title : '';
-  document.body.appendChild(ghost); moveDrag(x, y);
+  const title = drag.src === 'pool' ? (S.songMap.get(drag.id) || {}).title : cellsNow()[drag.idx].song;
+  ghost = document.createElement('div'); ghost.className = 'ghost'; ghost.textContent = title || '';
+  document.body.appendChild(ghost);
+  if (drag.src === 'cell') $('pool').classList.add('droptarget');
+  moveDrag(x, y);
   if (navigator.vibrate) try { navigator.vibrate(15); } catch(_){}
 }
 function moveDrag(x, y) {
   ghost.style.left = x + 'px'; ghost.style.top = y + 'px';
-  const el = document.elementFromPoint(x, y), cell = el && el.closest('.cell');
-  if (hoverCell && hoverCell !== cell) hoverCell.classList.remove('target');
-  hoverCell = cell || null; if (hoverCell) hoverCell.classList.add('target');
+  const el = document.elementFromPoint(x, y);
+  const cell = el && el.closest('.cell');
+  const next = cell || null;
+  if (hover && hover !== next) hover.classList.remove('target');
+  hover = next; if (hover) hover.classList.add('target');
+  drag.overPool = !!(el && el.closest('#pool'));
 }
 function endDrag() {
   if (ghost) ghost.remove(); ghost = null;
-  if (hoverCell) hoverCell.classList.remove('target'); hoverCell = null;
+  if (hover) hover.classList.remove('target'); hover = null;
+  $('pool').classList.remove('droptarget');
   if (drag && drag.timer) clearTimeout(drag.timer); drag = null;
+}
+function beginPointer(e, info) {
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  drag = { ...info, x: e.clientX, y: e.clientY, started: false, type: e.pointerType, timer: null, overPool: false };
+  if (e.pointerType !== 'mouse' && !info.off) drag.timer = setTimeout(() => { if (drag && !drag.started) startDrag(drag.x, drag.y); }, 220);
 }
 $('songs').addEventListener('pointerdown', e => {
   const item = e.target.closest('.song-item'); if (!item) return;
-  if (e.pointerType === 'mouse' && e.button !== 0) return;
-  drag = { id: item.dataset.id, off: item.classList.contains('off'), x: e.clientX, y: e.clientY, started: false, type: e.pointerType, timer: null };
-  if (e.pointerType !== 'mouse' && !drag.off) drag.timer = setTimeout(() => { if (drag && !drag.started) startDrag(drag.x, drag.y); }, 220);
+  beginPointer(e, { src: 'pool', id: item.dataset.id, off: item.classList.contains('off') });
+});
+$('board').addEventListener('pointerdown', e => {
+  if (e.target.closest('.xdel')) return;
+  const cell = e.target.closest('.cell.movable'); if (!cell) return;
+  beginPointer(e, { src: 'cell', idx: +cell.dataset.idx, off: false });
 });
 window.addEventListener('pointermove', e => {
   if (!drag) return;
@@ -519,42 +682,156 @@ window.addEventListener('pointermove', e => {
 });
 window.addEventListener('pointerup', () => {
   if (!drag) return;
-  if (drag.started) {
-    const idx = hoverCell ? +hoverCell.dataset.idx : null, id = drag.id;
-    endDrag(); if (idx !== null) tryPlace(idx, id);
-  } else {
-    const id = drag.id, off = drag.off; endDrag();
-    if (off) return toast('이미 빙고판에 있거나 부른 곡이에요.');
-    S.sel = S.sel === id ? null : id; renderSongs(); renderBoard();
+  const d = drag;
+  if (d.started) {
+    const to = hover ? +hover.dataset.idx : null, overPool = d.overPool;
+    endDrag();
+    suppressClick = true; setTimeout(() => suppressClick = false, 50);
+    if (d.src === 'pool' && to !== null) placeSong(to, d.id);
+    else if (d.src === 'cell' && to !== null) moveCell(d.idx, to);
+    else if (d.src === 'cell' && overPool) removeCell(d.idx);
+    return;
+  }
+  endDrag();
+  if (d.src === 'pool') {
+    if (d.off) { const s = S.songMap.get(d.id); toast(s && s.used ? '이미 부른 곡이에요.' : '이미 내 빙고판에 있는 곡이에요.'); return; }
+    S.sel = (S.sel && S.sel.from === 'pool' && S.sel.id === d.id) ? null : { from: 'pool', id: d.id };
+    renderSongs(); renderBoard();
     if (S.sel && !isOpen()) toast('지금은 빙고판이 잠겨 있어요.');
+    else if (S.sel && !S.nick) { toast('닉네임을 먼저 적고 저장해 주세요.'); }
   }
 });
 window.addEventListener('pointercancel', endDrag);
 document.addEventListener('touchmove', e => { if (drag && drag.started) e.preventDefault(); }, { passive: false });
 $('songs').addEventListener('contextmenu', e => e.preventDefault());
+$('board').addEventListener('contextmenu', e => { if (e.target.closest('.movable')) e.preventDefault(); });
 $('celebModal').onclick = () => $('celebModal').classList.add('hidden');
+
+// ── 사진으로 저장 ──
+function rr(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x+r, y); ctx.arcTo(x+w, y, x+w, y+h, r); ctx.arcTo(x+w, y+h, x, y+h, r); ctx.arcTo(x, y+h, x, y, r); ctx.arcTo(x, y, x+w, y, r); ctx.closePath(); }
+function wrapLines(ctx, text, maxW, maxLines) {
+  const out = []; let line = '';
+  for (const ch of String(text)) {
+    if (ctx.measureText(line + ch).width > maxW && line) { out.push(line); line = ch.trimStart(); if (out.length === maxLines) break; }
+    else line += ch;
+  }
+  if (out.length < maxLines && line) out.push(line);
+  if (out.length === maxLines && ctx.measureText(out.join('')).width < ctx.measureText(String(text)).width - 1) {
+    let l = out[maxLines - 1]; while (l && ctx.measureText(l + '…').width > maxW) l = l.slice(0, -1); out[maxLines - 1] = l + '…';
+  }
+  return out;
+}
+async function makeShot() {
+  if (S.conds.length < 25) return;
+  try { await document.fonts.ready; } catch {}
+  const cells = cellsNow(), order = bingoOrder(cells);
+  const F = w => `${w} {S}px Pretendard, -apple-system, sans-serif`;
+  const font = (w, s) => F(w).replace('{S}', s);
+  const W = 1080, P = 56, G = 12, CS = (W - P*2 - G*4) / 5;
+  const headH = 150, logH = order.length ? 40 + Math.ceil(order.length / 2) * 44 : 0;
+  const H = P + headH + CS*5 + G*4 + logH + 70;
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = '#f8fafc'; ctx.fillRect(0, 0, W, H);
+  // 머리
+  ctx.fillStyle = '#1f2937'; ctx.font = font(700, 30); ctx.textBaseline = 'alphabetic';
+  ctx.fillText('밍쑨 노래 빙고', P, P + 30);
+  ctx.fillStyle = '#2563eb'; ctx.font = font(800, 56);
+  let nick = S.nick || '이름 없음'; while (ctx.measureText(nick).width > W - P*2 - 260 && nick.length > 1) nick = nick.slice(0, -1);
+  ctx.fillText(nick, P, P + 100);
+  ctx.textAlign = 'right'; ctx.fillStyle = '#1f2937'; ctx.font = font(800, 56);
+  ctx.fillText(`${order.length}줄`, W - P, P + 100);
+  ctx.fillStyle = '#6b7280'; ctx.font = font(500, 24);
+  const d = new Date(); ctx.fillText(`${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()}`, W - P, P + 30);
+  ctx.textAlign = 'left';
+  // 칸
+  const top = P + headH, pos = i => [P + (i % 5) * (CS + G), top + Math.floor(i / 5) * (CS + G)];
+  cells.forEach((c, i) => {
+    const [x, y] = pos(i);
+    rr(ctx, x, y, CS, CS, 18);
+    ctx.fillStyle = c.checked ? '#2563eb' : (c.songId ? '#ffffff' : '#f3f4f6'); ctx.fill();
+    ctx.lineWidth = 3; ctx.strokeStyle = c.checked ? '#2563eb' : (c.songId ? '#93c5fd' : '#e5e7eb'); ctx.stroke();
+    ctx.fillStyle = c.checked ? 'rgba(255,255,255,.8)' : '#6b7280'; ctx.font = font(700, 20);
+    wrapLines(ctx, c.cond, CS - 28 - (c.checked ? 34 : 0), 2).forEach((l, k) => ctx.fillText(l, x + 14, y + 32 + k * 24));
+    if (c.songId) {
+      ctx.font = font(800, 26); ctx.fillStyle = c.checked ? '#ffffff' : '#1f2937';
+      const tl = wrapLines(ctx, c.song, CS - 28, 2);
+      const baseY = y + CS - 16 - (c.artist ? 26 : 0);
+      tl.forEach((l, k) => ctx.fillText(l, x + 14, baseY - (tl.length - 1 - k) * 30));
+      if (c.artist) { ctx.font = font(500, 19); ctx.fillStyle = c.checked ? 'rgba(255,255,255,.8)' : '#6b7280'; ctx.fillText(wrapLines(ctx, c.artist, CS - 28, 1)[0] || '', x + 14, y + CS - 14); }
+    }
+    if (c.checked) {
+      ctx.beginPath(); ctx.arc(x + CS - 26, y + 26, 16, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill();
+      ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.beginPath();
+      ctx.moveTo(x + CS - 33, y + 26); ctx.lineTo(x + CS - 28, y + 32); ctx.lineTo(x + CS - 19, y + 20); ctx.stroke();
+    }
+  });
+  // 빙고 줄
+  const ctr = i => { const [x, y] = pos(i); return [x + CS/2, y + CS/2]; };
+  order.forEach(o => {
+    const [x1, y1] = ctr(o.cells[0]), [x2, y2] = ctr(o.cells[4]);
+    ctx.globalAlpha = .6; ctx.strokeStyle = o.color; ctx.lineWidth = 14; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.globalAlpha = 1;
+  });
+  order.forEach(o => {
+    const [x1, y1] = ctr(o.cells[0]), [x2, y2] = ctr(o.cells[4]);
+    const bx = x1 + (x2 - x1) * .12, by = y1 + (y2 - y1) * .12;
+    ctx.beginPath(); ctx.arc(bx, by, 24, 0, Math.PI * 2); ctx.fillStyle = o.color; ctx.fill();
+    ctx.lineWidth = 4; ctx.strokeStyle = '#fff'; ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.font = font(800, 26); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(String(o.n), bx, by + 1); ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  });
+  // 빙고 기록
+  let ly = top + CS*5 + G*4 + 48;
+  order.forEach((o, k) => {
+    const x = P + (k % 2) * ((W - P*2) / 2), y = ly + Math.floor(k / 2) * 44;
+    ctx.beginPath(); ctx.arc(x + 14, y - 8, 14, 0, Math.PI * 2); ctx.fillStyle = o.color; ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = font(800, 16); ctx.textAlign = 'center'; ctx.fillText(String(o.n), x + 14, y - 2); ctx.textAlign = 'left';
+    ctx.fillStyle = '#1f2937'; ctx.font = font(700, 22); ctx.fillText(ordLabel(o.n), x + 38, y);
+    ctx.fillStyle = '#6b7280'; ctx.font = font(500, 20); ctx.fillText(LINE_NAMES[o.li], x + 38 + ctx.measureText(ordLabel(o.n) + '  ').width + 10, y);
+  });
+  ctx.fillStyle = '#9ca3af'; ctx.font = font(500, 18); ctx.textAlign = 'center';
+  ctx.fillText('mingsoon song bingo', W / 2, H - 28);
+  return cv;
+}
+let shotUrl = null;
+$('shotBtn').onclick = async () => {
+  if (!S.nick) { toast('닉네임을 먼저 적어 주세요. 사진에 같이 들어가요.'); $('nick').focus(); return; }
+  const cv = await makeShot(); if (!cv) return;
+  cv.toBlob(blob => {
+    if (shotUrl) URL.revokeObjectURL(shotUrl);
+    shotUrl = URL.createObjectURL(blob);
+    $('shotImg').src = shotUrl;
+    $('shotDl').href = shotUrl;
+    $('shotDl').download = `밍쑨빙고_${S.nick}.png`;
+    $('shotModal').classList.remove('hidden');
+  }, 'image/png');
+};
+$('shotClose').onclick = () => $('shotModal').classList.add('hidden');
 
 // ── 실시간 ──
 onSnapshot(collection(db, 'bingoCells'), snap => {
-  S.cells = snap.docs.map(d => ({ id: d.id, ...d.data({ serverTimestamps: 'estimate' }) })).sort((a,b) => a.idx - b.idx);
-  S.loaded = true;
-  const order = bingoOrder(S.cells);
-  if (S.prevCount !== null && order.length > S.prevCount) celebrate(order[order.length - 1], rewards());
-  S.prevCount = order.length;
-  renderAll();
-}, err => { $('board').innerHTML = `<div class="board-empty" style="grid-column:1/-1">연결 오류: ${esc(err.message)}</div>`; });
+  S.conds = snap.docs.map(d => ({ id: d.id, idx: d.data().idx, cond: d.data().cond })).sort((a,b) => a.idx - b.idx);
+  S.loaded.conds = true; checkCelebrate(); renderAll();
+}, err => { $('board').innerHTML = `<div class="board-empty" style="grid-column:1/-1">연결 오류: ${esc(fbErr(err))}</div>`; });
 
 onSnapshot(collection(db, 'bingoSongs'), snap => {
   S.songs = snap.docs.map(d => ({ id: d.id, ...d.data({ serverTimestamps: 'estimate' }) }));
+  S.songMap = new Map(S.songs.map(s => [s.id, s]));
   setTagOrder(S.songs);
-  renderSungLog($('sungLog'), S.songs, S.cells);
-  if (S.sel && !S.songs.find(s => s.id === S.sel)) S.sel = null;
-  renderTags(); renderSongs();
+  if (S.sel && S.sel.from === 'pool' && !S.songMap.has(S.sel.id)) S.sel = null;
+  S.loaded.songs = true; checkCelebrate(); renderAll();
 });
+
+onSnapshot(boardRef, snap => {
+  S.board = snap.exists() ? snap.data() : null;
+  if (S.board && S.board.nick && !S.nick) { S.nick = S.board.nick; $('nick').value = S.nick; store.set('msbingo-nick', S.nick); }
+  S.loaded.board = true; checkCelebrate(); renderAll();
+}, err => { console.error(err); toast('내 빙고판을 불러오지 못했어요. ' + fbErr(err)); S.loaded.board = true; });
 
 onSnapshot(doc(db, 'bingoMeta', 'config'), snap => {
   S.meta = snap.exists() ? snap.data() : null;
-  if (S.meta && S.meta.locked !== false) S.sel = null;
+  if (!isOpen()) S.sel = null;
   renderAll();
 }, err => { console.error(err); toast('빙고판 상태를 불러오지 못했어요. ' + fbErr(err)); });
 </script>
