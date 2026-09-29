@@ -371,6 +371,39 @@ details.bulk .sub{margin:8px 0;}
 .jatable td.ko{color:var(--g600);word-break:keep-all;}
 .jatable .inp{padding:6px 9px;font-size:13px;}
 .jatable .inp.changed{border-color:var(--blue);background:var(--blue-xl);}
+.roundbox{border:1px solid var(--g200);border-radius:10px;padding:9px 10px;margin-bottom:10px;background:var(--g50);}
+.rb-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+.rb-label{font-size:13px;font-weight:700;}
+.seg.sm button{font-size:12px;padding:5px 10px;}
+.rb-picked{display:none;margin-top:8px;}
+.roundbox.picked .rb-picked{display:block;}
+.rb-count{font-size:12px;color:var(--g500);margin-bottom:6px;}
+.rb-count b{color:var(--blue);font-size:14px;}
+.rb-btns{display:flex;gap:6px;flex-wrap:wrap;}
+.btn-line.sm{font-size:12px;padding:5px 9px;}
+.pickbtn{width:22px;height:22px;flex:none;border-radius:6px;border:1.5px solid var(--g300);background:var(--card);color:#fff;font-size:13px;line-height:19px;text-align:center;cursor:pointer;padding:0;font-family:inherit;}
+.pickbtn.on{background:var(--blue);border-color:var(--blue);}
+.song-item.outround{opacity:.55;}
+.song-item.outround:hover{opacity:.85;}
+.rb-tagrow{margin-top:8px;}
+.tag .tdel{margin-left:5px;opacity:.6;font-weight:700;}
+.tag .tdel:hover{opacity:1;color:var(--red);}
+.vhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;}
+.vhead h3{margin:0;}
+.vetop{margin-bottom:10px;}
+.vehint{font-size:12px;color:var(--g500);margin-top:8px;line-height:1.5;}
+#viewBoard.editing .cell{cursor:pointer;}
+#viewBoard .xdel{top:auto;bottom:5px;}
+#viewBoard .cell .cond{cursor:inherit;}
+#viewBoard .cell .cond:hover{background:none;color:inherit;}
+#viewBoard.editing .cell:hover{border-color:var(--blue);}
+.vepick{margin-top:12px;}
+.velist{max-height:220px;overflow:auto;display:flex;flex-direction:column;gap:4px;margin-top:8px;}
+.verow{display:flex;align-items:center;gap:8px;border:1px solid var(--g200);border-radius:8px;padding:7px 10px;cursor:pointer;background:var(--card);font-size:13px;}
+.verow:hover{border-color:var(--blue);}
+.verow .vt{font-weight:600;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.verow .va{color:var(--g500);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.verow .badge{margin-left:auto;font-size:11px;font-weight:600;padding:2px 7px;border-radius:6px;white-space:nowrap;}
 .modal.wide{max-width:560px;max-height:92vh;overflow:auto;}
 </style>
 <script>if(window.top!==window.self){document.documentElement.style.display='none';try{window.top.location=window.self.location;}catch(e){}}</script>
@@ -379,7 +412,7 @@ details.bulk .sub{margin:8px 0;}
 <body>
 <header>
   <div class="hdr-top">
-    <div class="logo"><span id="roomTitle"></span> <em>노래</em> 빙고<small>관리자 · v11</small></div>
+    <div class="logo"><span id="roomTitle"></span> <em>노래</em> 빙고<small>관리자 · v15</small></div>
     <div class="hdr-r">
       <button class="btn-sm" id="langBtn">日本語</button>
       <button class="btn-sm icon-btn" id="themeBtn" aria-label="다크 모드">🌙</button>
@@ -399,6 +432,12 @@ details.bulk .sub{margin:8px 0;}
       <button class="btn-blue" id="loginBtn">로그인</button>
     </div>
     <div class="err" id="pwErr">이메일 또는 비밀번호가 틀렸습니다.</div>
+  </div>
+
+  <div id="denyBox" class="login-card" style="display:none;max-width:440px;">
+    <h2>사용 권한이 없는 계정이에요</h2>
+    <p id="denyText">이 계정은 빙고판을 만들거나 관리할 수 없어요. 사이트 관리자에게 권한을 요청해 주세요.</p>
+    <div class="row"><span style="font-size:13px;color:var(--g500);">로그인 계정</span> <b id="denyEmail" style="font-size:13px;"></b></div>
   </div>
 
   <div id="roomBox" class="login-card" style="display:none;max-width:440px;">
@@ -429,6 +468,16 @@ details.bulk .sub{margin:8px 0;}
       <aside class="pool">
         <h2>노래 목록</h2>
         <div class="sub">노래를 부르면 여기서 “불렀어요”를 눌러 주세요. 모든 시청자 빙고판에서 그 곡이 체크돼요.</div>
+        <div class="roundbox">
+          <div class="rb-top"><span class="rb-label">이번 판 노래</span>
+            <div class="seg sm" id="poolSeg"><button data-mode="all">전체 곡</button><button data-mode="picked">고른 곡만</button></div></div>
+          <div class="rb-tagrow"><button class="btn-line sm" id="bulkTagBtn">🏷 보이는 곡에 태그 붙이기 · 떼기</button></div>
+          <div class="rb-picked" id="rbPicked">
+            <div class="rb-count" id="rbCount"></div>
+            <div class="rb-btns"><button class="btn-line sm" id="pickAll">보이는 곡 모두 넣기</button><button class="btn-line sm" id="unpickAll">보이는 곡 모두 빼기</button></div>
+            <label class="chk" style="margin-top:6px;"><input type="checkbox" id="onlyPicked">이번 판 곡만 보기</label>
+          </div>
+        </div>
         <input class="search" id="search" placeholder="제목, 가수 검색">
         <div class="tags" id="tags"></div>
         <div class="songs" id="songs"><div class="empty">불러오는 중...</div></div>
@@ -442,6 +491,17 @@ details.bulk .sub{margin:8px 0;}
     </section>
 
     <div class="cards">
+      <div class="card wide" id="adminsCard" style="display:none;">
+        <h2>관리자 계정 관리 <span class="badge onboard" style="font-size:11px;vertical-align:2px;">최고 관리자만 보여요</span></h2>
+        <div class="sub">여기에 등록된 계정만 빙고 방을 만들고 관리할 수 있어요. 계정은 먼저 Firebase 콘솔 → Authentication → 사용자 추가에서 만든 뒤, 같은 이메일을 여기에 등록해 주세요. 목록에서 빼면 그 계정은 바로 자기 방을 관리할 수 없게 돼요.</div>
+        <div class="addrow" style="grid-template-columns:2fr 1.2fr auto;">
+          <input class="inp" id="adEmail" type="email" placeholder="이메일" autocomplete="off">
+          <input class="inp" id="adMemo" placeholder="메모 (예: 누구 계정인지)" maxlength="30" autocomplete="off">
+          <button class="btn-blue" id="adAdd">등록</button>
+        </div>
+        <div id="adList" style="margin-top:12px;"></div>
+      </div>
+
       <div class="card wide">
         <h2>방 설정</h2>
         <div class="sub">시청자에게는 아래 링크를 공유해 주세요. 방마다 링크가 달라요.</div>
@@ -522,10 +582,34 @@ details.bulk .sub{margin:8px 0;}
 
 <div class="overlay hidden" id="viewModal">
   <div class="modal wide">
-    <h3 id="viewTitle">빙고판</h3>
+    <div class="vhead"><h3 id="viewTitle">빙고판</h3><button class="btn-line sm" id="viewEditBtn">✏️ 수정하기</button></div>
+    <div id="veTop" class="vetop" hidden>
+      <label class="flabel" style="margin-top:0">닉네임</label>
+      <input class="inp" id="veNick" maxlength="20">
+      <div class="vehint">칸을 누른 뒤 아래 목록에서 곡을 고르면 들어가요. 곡이 있는 칸을 누르고 다른 칸을 누르면 자리가 바뀌어요. ×는 곡 빼기예요.</div>
+    </div>
     <div class="board" id="viewBoard"></div>
     <div class="bingo-log" id="viewLog"></div>
-    <div class="mbtns"><button class="btn-cancel" id="viewClose">닫기</button></div>
+    <div id="vePick" class="vepick" hidden>
+      <input class="search" id="veSearch" placeholder="제목, 가수 검색">
+      <div class="velist" id="veList"></div>
+    </div>
+    <div class="mbtns" id="viewBtns"><button class="btn-cancel" id="viewClose">닫기</button></div>
+    <div class="mbtns" id="veBtns" hidden><button class="btn-cancel" id="veCancel">취소</button><button class="btn-confirm" id="veSave">저장</button></div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="tagModal">
+  <div class="modal wide">
+    <h3>태그 붙이기 · 떼기</h3>
+    <div class="sub" id="tagModalSub" style="font-size:13px;color:var(--g500);margin-bottom:10px;"></div>
+    <div class="tagpick" id="tmTags"></div>
+    <div class="newtag"><input class="inp" id="tmNew" placeholder="새 태그 만들기"><button class="btn-line" id="tmNewBtn">만들기</button></div>
+    <div class="mbtns">
+      <button class="btn-cancel" id="tmClose">닫기</button>
+      <button class="btn-danger" id="tmRemove" style="flex:1;">고른 태그 떼기</button>
+      <button class="btn-confirm" id="tmAdd">고른 태그 붙이기</button>
+    </div>
   </div>
 </div>
 
@@ -536,6 +620,7 @@ details.bulk .sub{margin:8px 0;}
     <label>가수</label><input class="inp" id="eArtist">
     <div class="jarow"><div><label>일본어 제목</label><input class="inp" id="eTitleJa" placeholder="없으면 원래 제목"></div><div><label>일본어 가수</label><input class="inp" id="eArtistJa" placeholder="없으면 원래 가수"></div></div>
     <label>태그</label><div class="tagpick" id="eTags"></div>
+    <div class="newtag"><input class="inp" id="eNewTag" placeholder="새 태그 만들기"><button class="btn-line" id="eNewTagBtn">만들기</button></div>
     <div class="mbtns">
       <button class="btn-danger" id="eDel" style="flex:none;">삭제</button>
       <button class="btn-cancel" id="eCancel">취소</button>
@@ -559,7 +644,7 @@ details.bulk .sub{margin:8px 0;}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, doc, onSnapshot, setDoc, updateDoc, deleteDoc, writeBatch, getDoc, getDocs, query, where, limit, serverTimestamp, Timestamp }
+import { getFirestore, collection, doc, onSnapshot, setDoc, updateDoc, deleteDoc, writeBatch, getDoc, getDocs, query, where, limit, serverTimestamp, Timestamp, arrayUnion, arrayRemove }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -706,6 +791,8 @@ const condText = c => LANG === 'ja' ? (c.condJa || KO_JA_DEFAULT[c.cond] || c.co
 const songTitle = s => (LANG === 'ja' && s.titleJa) ? s.titleJa : s.title;
 const songArtist = s => (LANG === 'ja' && s.artistJa) ? s.artistJa : (s.artist || '');
 const tagText = t => LANG === 'ja' ? (TAG_JA[t] || KO_JA_DEFAULT[t] || t) : t;
+// 이번 판 노래: 'all'이면 전체 곡, 'picked'면 관리자가 고른 곡만
+const inRound = (s, meta) => !(meta && meta.poolMode === 'picked') || !!s.picked;
 const songSearchText = s => `${s.title} ${s.artist || ''} ${s.titleJa || ''} ${s.artistJa || ''}`.toLowerCase();
 const tagChip = t => `<span class="tchip" style="${tagVars(t)}">${esc(tagText(t))}</span>`;
 
@@ -835,7 +922,22 @@ const JA = {
   '설정을 불러오지 못했어요.': '設定を読み込めませんでした。', '시청자 빙고판을 불러오지 못했어요.': '視聴者のカードを読み込めませんでした。', '아직 태그가 없어요. 아래에서 새 태그를 만들어 주세요.': 'まだタグがありません。下で新しいタグを作ってください。',
   '크기를 바꾸면 이미 채운 시청자 빙고판의 칸 배치가 달라져요. 새 판을 시작하기 전에 바꾸는 걸 추천해요.': 'サイズを変えると、すでに埋めた視聴者カードの配置が変わります。新しいゲームを始める前に変更するのがおすすめです。',
   '빙고판 크기를 바꿨어요.': 'カードのサイズを変更しました。', '크기 바꾸기': 'サイズ変更', '일본어 표기': '日本語表記', '일본어 화면에서 보일 이름이에요. 비워 두면 원래 이름이 보여요. 기본 조건처럼 자동으로 번역되는 건 흐린 글씨로 미리 보여요.': '日本語画面で表示される名前です。空欄なら元の名前が表示されます。デフォルトのお題のように自動で翻訳されるものは薄い文字で表示されます。',
-  '칸 주제': 'マスのお題', '곡': '曲', '일본어': '日本語', '일본어 제목': '日本語タイトル', '일본어 가수': '日本語アーティスト', '없으면 원래 제목': '空欄なら元のタイトル', '없으면 원래 가수': '空欄なら元のアーティスト',
+  '칸 주제': 'マスのお題', '사용 권한이 없는 계정이에요': '利用権限のないアカウントです', '이 계정은 빙고판을 만들거나 관리할 수 없어요. 사이트 관리자에게 권한을 요청해 주세요.': 'このアカウントではビンゴを作成・管理できません。サイト管理者に権限をリクエストしてください。',
+  '관리자 계정 관리': '管理者アカウント管理', '최고 관리자만 보여요': '最高管理者のみ表示',
+  '여기에 등록된 계정만 빙고 방을 만들고 관리할 수 있어요. 계정은 먼저 Firebase 콘솔 → Authentication → 사용자 추가에서 만든 뒤, 같은 이메일을 여기에 등록해 주세요. 목록에서 빼면 그 계정은 바로 자기 방을 관리할 수 없게 돼요.': 'ここに登録されたアカウントだけがビンゴルームを作成・管理できます。先にFirebaseコンソール → Authentication → ユーザーを追加 でアカウントを作り、同じメールアドレスをここに登録してください。リストから外すと、そのアカウントはすぐに自分のルームを管理できなくなります。',
+  '메모 (예: 누구 계정인지)': 'メモ（例：誰のアカウントか）', '등록': '登録', '메모': 'メモ', '나': '自分',
+  '아직 등록된 관리자 계정이 없어요. 최고 관리자(나)는 등록하지 않아도 항상 쓸 수 있어요.': 'まだ登録された管理者アカウントはありません。最高管理者（自分）は登録しなくても常に使えます。',
+  '이메일을 정확히 적어 주세요.': 'メールアドレスを正しく入力してください。', '등록하지 못했어요.': '登録できませんでした。', '관리자 계정 빼기': '管理者アカウントを外す',
+  '계정을 목록에서 뺄까요? 이 계정은 바로 빙고 방을 관리할 수 없게 돼요. (방과 데이터는 지워지지 않아요)': 'をリストから外しますか？このアカウントはすぐにビンゴルームを管理できなくなります。（ルームとデータは削除されません）', '뺐어요.': '外しました。', '✏️ 수정하기': '✏️ 編集する', '칸을 누른 뒤 아래 목록에서 곡을 고르면 들어가요. 곡이 있는 칸을 누르고 다른 칸을 누르면 자리가 바뀌어요. ×는 곡 빼기예요.': 'マスをタップしてから下のリストで曲を選ぶと入ります。曲のあるマスをタップして別のマスをタップすると入れ替わります。×で曲を外します。',
+  '이 빙고판에 있음': 'このカードにあり', '먼저 곡을 넣을 칸을 골라 주세요.': '先に曲を入れるマスを選んでください。', '수정 취소': '編集をキャンセル', '저장하지 않은 내용이 사라져요. 취소할까요?': '保存していない内容は消えます。キャンセルしますか？', '취소하기': 'キャンセルする',
+  '덮어쓰기': '上書き', '수정하는 동안 시청자가 빙고판을 바꿨어요. 관리자가 고친 내용으로 덮어쓸까요?': '編集中に視聴者がカードを変更しました。管理者の内容で上書きしますか？',
+  '빙고판을 수정했어요. 시청자 화면에도 바로 반영돼요.': 'カードを編集しました。視聴者の画面にもすぐ反映されます。', '님 빙고판 ·': 'さんのカード ·', '태그 지우기': 'タグを削除', '태그를 저장하지 못했어요.': 'タグを保存できませんでした。', '태그를 지우지 못했어요.': 'タグを削除できませんでした。',
+  '이미 있는 태그라서 골라 뒀어요.': 'すでにあるタグなので選択しました。', '🏷 보이는 곡에 태그 붙이기 · 떼기': '🏷 表示中の曲にタグを付ける・外す', '태그 붙이기 · 떼기': 'タグを付ける・外す',
+  '고른 태그 떼기': '選んだタグを外す', '고른 태그 붙이기': '選んだタグを付ける', '붙이거나 뗄 태그를 골라 주세요.': '付ける・外すタグを選んでください。',
+  '이미 모든 곡에 붙어 있어요.': 'すでにすべての曲に付いています。', '뗄 곡이 없어요.': '外す曲がありません。', '이번 판 노래': '今回の曲', '전체 곡': '全曲', '고른 곡만': '選んだ曲のみ', '보이는 곡 모두 넣기': '表示中の曲をすべて追加', '보이는 곡 모두 빼기': '表示中の曲をすべて外す',
+  '이번 판 곡만 보기': '今回の曲だけ表示', '이번 판에서 빼기': '今回から外す', '이번 판에 넣기': '今回に追加', '더 넣을 곡이 없어요.': '追加する曲がありません。',
+  '이제 고른 곡만 시청자에게 보여요. 곡 왼쪽 네모를 눌러 이번 판 곡을 골라 주세요.': '選んだ曲だけが視聴者に表示されます。曲の左の四角をタップして今回の曲を選んでください。',
+  '이제 전체 곡이 시청자에게 보여요.': 'すべての曲が視聴者に表示されます。', '이번 빙고에서는 쓸 수 없는 곡이에요.': '今回のビンゴでは使えない曲です。', '곡': '曲', '일본어': '日本語', '일본어 제목': '日本語タイトル', '일본어 가수': '日本語アーティスト', '없으면 원래 제목': '空欄なら元のタイトル', '없으면 원래 가수': '空欄なら元のアーティスト',
   '일본어 표기 저장': '日本語表記を保存', '바뀐 내용이 없어요.': '変更がありません。', '저장하지 않은 내용이 있어요. 그래도 넘어갈까요?': '保存していない変更があります。移動しますか？', '넘어가기': '移動する', '중복': '重複', '같은 닉네임이 여러 개 있어요': '同じニックネームが複数あります', '노래를 부르기 시작해서 빙고판을 자동으로 잠갔어요.': '歌い始めたので、ビンゴカードを自動でロックしました。', '칸': 'マス', '빙고판': 'ビンゴカード', '여기에 놓으면 빙고판에서 빠져요': 'ここに置くとカードから外れます', '다크 모드로 보기': 'ダークモード',
 };
 const JA_RULES = [
@@ -862,6 +964,11 @@ const JA_RULES = [
   [/^(\d+)명 빙고판에 들어가 있어서, 그 칸은 비어 보이게 돼요\.$/, (_, n) => `${n}人のカードに入っているため、そのマスは空欄になります。`],
   [/^시청자 빙고판 (\d+)개와 부른 곡 기록을 모두 지워요\. 조건과 노래 목록은 남아요\.$/, (_, n) => `視聴者のカード${n}枚と歌った曲の記録をすべて削除します。お題と曲リストは残ります。`],
   [/^방을 만들고 노래 (\d+)곡(?:, 시청자 빙고판 (\d+)개)?를 가져왔어요\.$/, (_, a, b) => `ルームを作り、曲${a}曲${b ? `・視聴者カード${b}枚` : ''}を引き継ぎました。`],
+  [/^(\d+)곡을 이번 판에 넣었어요\.$/, (_, n) => `${n}曲を今回に追加しました。`], [/^(\d+)곡을 이번 판에서 뺐어요\.$/, (_, n) => `${n}曲を今回から外しました。`],
+  [/^“(.*)” 태그를 만들었어요\.$/, (_, t) => `「${t}」タグを作りました。`],
+  [/^지금 노래 목록에 보이는 (\d+)곡에 적용돼요\. 태그 필터나 검색으로 곡을 먼저 좁혀 주세요\.$/, (_, n) => `いま曲リストに表示中の${n}曲に適用されます。タグやキーワードで先に絞り込んでください。`],
+  [/^(\d+)곡에 태그를 붙였어요\.$/, (_, n) => `${n}曲にタグを付けました。`], [/^(\d+)곡에서 태그를 뗐어요\.$/, (_, n) => `${n}曲からタグを外しました。`],
+  [/^(.+) 계정을 등록했어요\.$/, (_, e) => `${e} を登録しました。`],
   [/^(\d+)개 바뀜$/, (_, n) => `${n}件変更`], [/^일본어 표기 (\d+)개를 저장했어요\.$/, (_, n) => `日本語表記を${n}件保存しました。`],
   [/^(\d+)×(\d+) 빙고판으로 바꿨어요\.$/, (_, a, b) => `${a}×${b}のカードに変更しました。`],
 ];
@@ -958,7 +1065,7 @@ $('logoutBtn').onclick = () => signOut(auth);
 let started = false;
 onAuthStateChanged(auth, user => {
   $('loginBox').style.display = user ? 'none' : 'block';
-  if (!user) { $('adminWrap').style.display = 'none'; $('roomBox').style.display = 'none'; }
+  if (!user) { $('adminWrap').style.display = 'none'; $('roomBox').style.display = 'none'; $('denyBox').style.display = 'none'; }
   $('logoutBtn').style.display = user ? 'inline-block' : 'none';
   if (user && !started) { started = true; findRoom(user); }
 });
@@ -967,7 +1074,22 @@ onAuthStateChanged(auth, user => {
 if (LANG === 'ja') $('bulkSongs').placeholder = 'アイドル - YOASOBI - J-POP, アニソン\nLemon, 米津玄師, J-POP\n怪獣の花唄 - Vaundy #最近の曲 #バンド曲\n夜に駆ける（Excelからコピーするとタイトル・アーティスト・タグの列がタブで区切られます）';
 // ── 내 방 찾기 / 만들기 ──
 const viewerUrl = () => new URL('index.html?room=' + encodeURIComponent(S.room), location.href).href;
+// ── 사용 권한 (등록된 관리자 계정만) ──
+const myMail = () => String((auth.currentUser && auth.currentUser.email) || '').toLowerCase();
+async function checkSuper() {
+  try { await getDocs(query(collection(db, 'bingoAdmins'), limit(1))); S.isSuper = true; } catch { S.isSuper = false; }
+  return S.isSuper;
+}
+async function isAllowed() {
+  if (S.isSuper) return true;
+  try { return (await getDoc(doc(db, 'bingoAdmins', myMail()))).exists(); } catch { return false; }
+}
 async function findRoom(user) {
+  await checkSuper();
+  if (!await isAllowed()) {
+    $('denyEmail').textContent = myMail(); $('denyBox').style.display = 'block';
+    return;
+  }
   try {
     const snap = await getDocs(query(collection(db, 'rooms'), where('owner', '==', user.uid), limit(1)));
     if (!snap.empty) { enterRoom(snap.docs[0].id); return; }
@@ -983,6 +1105,7 @@ function enterRoom(id) {
   $('roomBox').style.display = 'none'; $('adminWrap').style.display = 'block';
   $('viewerLink').href = viewerUrl(); $('shareUrl').value = viewerUrl(); $('roomSlugShow').textContent = id;
   $('myEmail').textContent = (auth.currentUser && auth.currentUser.email) || '';
+  if (S.isSuper) { $('adminsCard').style.display = 'block'; watchAdmins(); }
   subscribe();
 }
 $('roomSlug').addEventListener('input', () => {
@@ -1040,6 +1163,33 @@ $('roomNameSave').onclick = async () => {
   await setDoc(metaRef, { name: v }, { merge: true }); toast('방 이름을 바꿨어요.');
 };
 
+let adminsWatching = false;
+function watchAdmins() {
+  if (adminsWatching) return; adminsWatching = true;
+  onSnapshot(collection(db, 'bingoAdmins'), snap => {
+    const list = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => a.id.localeCompare(b.id));
+    $('adList').innerHTML = list.length ? `<table class="ptable"><thead><tr><th>${esc(tr('이메일'))}</th><th>${esc(tr('메모'))}</th><th></th></tr></thead><tbody>${
+      list.map(a => `<tr><td><b>${esc(a.id)}</b>${a.id === myMail() ? ` <span class="badge onboard">${esc(tr('나'))}</span>` : ''}</td><td class="rwl">${esc(a.memo || '')}</td><td class="ops"><button class="del" data-adel="${esc(a.id)}">${esc(tr('빼기'))}</button></td></tr>`).join('')
+    }</tbody></table>` : `<div class="empty">${esc(tr('아직 등록된 관리자 계정이 없어요. 최고 관리자(나)는 등록하지 않아도 항상 쓸 수 있어요.'))}</div>`;
+  }, err => { $('adList').innerHTML = `<div class="empty">${esc(fbErr(err))}</div>`; });
+}
+$('adAdd').onclick = async () => {
+  const email = $('adEmail').value.trim().toLowerCase(), memo = $('adMemo').value.trim().slice(0, 30);
+  if (!/^[^\s@/]+@[^\s@/]+\.[^\s@/]+$/.test(email)) { toast('이메일을 정확히 적어 주세요.'); $('adEmail').focus(); return; }
+  try {
+    await setDoc(doc(db, 'bingoAdmins', email), { memo, addedAt: serverTimestamp() });
+    $('adEmail').value = ''; $('adMemo').value = ''; toast(`${email} 계정을 등록했어요.`);
+  } catch (e) { toast('등록하지 못했어요. ' + fbErr(e)); }
+};
+$('adEmail').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) $('adMemo').focus(); });
+$('adMemo').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) $('adAdd').click(); });
+$('adList').addEventListener('click', async e => {
+  const b = e.target.closest('[data-adel]'); if (!b) return;
+  const id = b.dataset.adel;
+  if (!await ask('관리자 계정 빼기', `<b>${esc(id)}</b>${esc(tr(' 계정을 목록에서 뺄까요? 이 계정은 바로 빙고 방을 관리할 수 없게 돼요. (방과 데이터는 지워지지 않아요)'))}`, '빼기')) return;
+  try { await deleteDoc(doc(db, 'bingoAdmins', id)); toast('뺐어요.'); } catch (err) { toast(fbErr(err)); }
+});
+
 // ── 상태 ──
 const S = { room: null, conds: [], songs: [], songMap: new Map(), boards: [], meta: null, q: '', tag: '전체', loaded: false,
   agg: [], cnt: new Map(), editingCond: null, openAgg: null, viewId: null, pFilter: '',
@@ -1054,10 +1204,18 @@ function songTags() {
   S.songs.forEach(s => (s.tags||[]).forEach(t => set.add(t)));
   return [...set].sort((a,b) => a.localeCompare(b, 'ko'));
 }
+const tagLib = () => (S.meta && Array.isArray(S.meta.tagLib)) ? S.meta.tagLib : [];
 function allTags() {
   const list = songTags(), keys = new Set(list.map(tagKey));
-  S.extraTags.forEach(t => { if (!keys.has(tagKey(t))) { list.push(t); keys.add(tagKey(t)); } });
-  return list;
+  [...tagLib(), ...S.extraTags].forEach(t => { if (!keys.has(tagKey(t))) { list.push(t); keys.add(tagKey(t)); } });
+  return list.sort((a, b) => a.localeCompare(b, 'ko'));
+}
+// 저장해 둔 태그에 추가 (방 정보에 기록 → 새로고침해도 남음)
+async function saveTagsToLib(tags) {
+  const lib = new Set(tagLib().map(tagKey));
+  const add = [...new Set(tags)].filter(t => t && !lib.has(tagKey(t)));
+  if (!add.length) return;
+  try { await setDoc(metaRef, { tagLib: arrayUnion(...add) }, { merge: true }); } catch (e) { toast('태그를 저장하지 못했어요. ' + fbErr(e)); }
 }
 function aggregate() {
   const agg = Array.from({ length: 25 }, () => new Map()), cnt = new Map();
@@ -1105,20 +1263,34 @@ function renderTags() {
   if (!list.includes(S.tag)) S.tag = '전체';
   $('tags').innerHTML = list.length > 1 ? list.map(t => `<button class="tag${t===S.tag?' on':''}" data-tag="${esc(t)}"${t==='전체'?'':` style="${tagVars(t)}"`}>${esc(t==='전체'?t:tagText(t))}</button>`).join('') : '';
 }
-function renderSongs() {
-  const q = S.q.trim().toLowerCase();
-  const list = S.songs.filter(s => {
+function visibleSongs() {
+  const q = S.q.trim().toLowerCase(), onlyPicked = S.meta && S.meta.poolMode === 'picked' && $('onlyPicked').checked;
+  return S.songs.filter(s => {
+    if (onlyPicked && !s.picked) return false;
     if (S.tag !== '전체' && !(s.tags||[]).includes(S.tag)) return false;
     if (q && !songSearchText(s).includes(q)) return false;
     return true;
-  }).sort((a,b) => (a.used ? 1 : 0) - (b.used ? 1 : 0) || (S.cnt.get(b.id) || 0) - (S.cnt.get(a.id) || 0) || a.title.localeCompare(b.title, 'ko'));
+  });
+}
+function renderRound() {
+  const picked = S.meta && S.meta.poolMode === 'picked';
+  document.querySelectorAll('#poolSeg button').forEach(b => b.classList.toggle('on', b.dataset.mode === (picked ? 'picked' : 'all')));
+  document.querySelector('.roundbox').classList.toggle('picked', !!picked);
+  const n = S.songs.filter(s => s.picked).length;
+  $('rbCount').innerHTML = `<b>${n}</b> / ${S.songs.length}`;
+}
+function renderSongs() {
+  const q = S.q.trim().toLowerCase();
+  const picked = S.meta && S.meta.poolMode === 'picked';
+  const list = visibleSongs().sort((a,b) => (a.used ? 1 : 0) - (b.used ? 1 : 0) || (picked ? (b.picked ? 1 : 0) - (a.picked ? 1 : 0) : 0) || (S.cnt.get(b.id) || 0) - (S.cnt.get(a.id) || 0) || a.title.localeCompare(b.title, 'ko'));
   const el = $('songs');
   if (!S.songs.length) { el.innerHTML = '<div class="empty">아래 노래 추가에서 곡을 넣어 주세요.</div>'; return; }
   if (!list.length) { el.innerHTML = '<div class="empty">검색 결과가 없어요.</div>'; return; }
   el.innerHTML = list.map(s => {
     const n = S.cnt.get(s.id) || 0;
     const badge = (s.used ? '<span class="badge used">부른 곡</span>' : '') + (n ? `<span class="badge onboard" style="margin-left:4px">${n}명</span>` : '');
-    return `<div class="song-item${s.used?' off used':''}" data-id="${esc(s.id)}" style="cursor:default">
+    return `<div class="song-item${s.used?' off used':''}${picked && !s.picked ? ' outround' : ''}" data-id="${esc(s.id)}" style="cursor:default">
+      ${picked ? `<button class="pickbtn${s.picked ? ' on' : ''}" data-act="pick" data-id="${esc(s.id)}" title="${esc(tr(s.picked ? '이번 판에서 빼기' : '이번 판에 넣기'))}">${s.picked ? '✓' : ''}</button>` : ''}
       <div style="min-width:0;flex:1"><div class="t">${esc(songTitle(s))}</div>${songArtist(s)?`<div class="a">${esc(songArtist(s))}</div>`:''}${(s.tags&&s.tags.length)?`<div class="tg">${s.tags.map(tagChip).join('')}</div>`:''}</div>
       ${badge}
       <span class="ops">${s.used ? `<button data-act="unsing" data-id="${esc(s.id)}">부름 취소</button>` : `<button class="sing" data-act="sing" data-id="${esc(s.id)}">불렀어요</button>`}<button data-act="edit" data-id="${esc(s.id)}">수정</button></span>
@@ -1152,11 +1324,11 @@ function renderParticipants() {
       <td class="ops"><button data-view="${esc(p.b.id)}">보기</button><button class="del" data-pdel="${esc(p.b.id)}">삭제</button></td></tr>`).join('')
   }</tbody></table>`;
 }
-function tagChips(el, selected) {
-  const tags = allTags();
-  el.innerHTML = tags.map(t => `<button class="tag${selected.has(t)?' on':''}" data-t="${esc(t)}" style="${tagVars(t)}">${esc(tagText(t))}</button>`).join('') || '<span class="sub" style="margin:0">아직 태그가 없어요. 아래에서 새 태그를 만들어 주세요.</span>';
+function tagChips(el, selected, deletable) {
+  const tags = allTags(), used = new Set(songTags().map(tagKey));
+  el.innerHTML = tags.map(t => `<button class="tag${selected.has(t)?' on':''}" data-t="${esc(t)}" style="${tagVars(t)}">${esc(tagText(t))}${deletable && !used.has(tagKey(t)) ? `<span class="tdel" data-deltag="${esc(t)}" title="${esc(tr('태그 지우기'))}">×</span>` : ''}</button>`).join('') || '<span class="sub" style="margin:0">아직 태그가 없어요. 아래에서 새 태그를 만들어 주세요.</span>';
 }
-function renderTagPick() { tagChips($('tagPick'), S.pickTags); $('tagCount').textContent = S.pickTags.size ? `${S.pickTags.size}개 선택` : ''; }
+function renderTagPick() { tagChips($('tagPick'), S.pickTags, true); $('tagCount').textContent = S.pickTags.size ? `${S.pickTags.size}개 선택` : ''; }
 function renderRwEditor(list) {
   $('rwEditor').innerHTML = list.map((r, i) => `<div class="rw-row">
     <span>빙고</span>
@@ -1177,7 +1349,7 @@ function readRwEditor() {
 function renderAll() {
   aggregate();
   renderNowBar(S.songs, s => { const n = S.cnt.get(s.id) || 0; return n ? `<span class="nmine">${esc(tr(n + '명'))}</span>` : ''; });
-  renderStatus(); renderBoard(); renderTags(); renderSongs(); renderTagPick(); renderSung(); renderParticipants(); renderJa();
+  renderStatus(); renderRound(); renderBoard(); renderTags(); renderSongs(); renderTagPick(); renderSung(); renderParticipants(); renderJa();
   if (S.openAgg !== null) renderAgg();
   if (S.viewId) renderView();
 }
@@ -1200,7 +1372,62 @@ $('songs').addEventListener('click', e => {
   if (act === 'sing') setSung(id, true);
   else if (act === 'unsing') setSung(id, false);
   else if (act === 'edit') openSongEdit(id);
+  else if (act === 'pick') { const s = S.songMap.get(id); if (s) updateDoc(doc(db, 'rooms', S.room, 'songs', id), { picked: !s.picked }); }
 });
+$('poolSeg').addEventListener('click', async e => {
+  const b = e.target.closest('[data-mode]'); if (!b) return;
+  const mode = b.dataset.mode, cur = S.meta && S.meta.poolMode === 'picked' ? 'picked' : 'all';
+  if (mode === cur) return;
+  await setDoc(metaRef, { poolMode: mode }, { merge: true });
+  toast(mode === 'picked' ? '이제 고른 곡만 시청자에게 보여요. 곡 왼쪽 네모를 눌러 이번 판 곡을 골라 주세요.' : '이제 전체 곡이 시청자에게 보여요.');
+});
+async function pickVisible(on) {
+  const list = visibleSongs().filter(s => !!s.picked !== on);
+  if (!list.length) return toast(on ? '더 넣을 곡이 없어요.' : '뺄 곡이 없어요.');
+  for (let k = 0; k < list.length; k += 400) { const b = writeBatch(db); list.slice(k, k + 400).forEach(s => b.update(doc(db, 'rooms', S.room, 'songs', s.id), { picked: on })); await b.commit(); }
+  toast(on ? `${list.length}곡을 이번 판에 넣었어요.` : `${list.length}곡을 이번 판에서 뺐어요.`);
+}
+$('pickAll').onclick = () => pickVisible(true);
+$('unpickAll').onclick = () => pickVisible(false);
+$('onlyPicked').onchange = () => renderSongs();
+
+// ── 보이는 곡에 태그 붙이기 / 떼기 ──
+S.tmTags = new Set();
+function renderTagModal() {
+  const n = visibleSongs().length;
+  $('tagModalSub').textContent = tr(`지금 노래 목록에 보이는 ${n}곡에 적용돼요. 태그 필터나 검색으로 곡을 먼저 좁혀 주세요.`);
+  tagChips($('tmTags'), S.tmTags);
+}
+$('bulkTagBtn').onclick = () => { S.tmTags = new Set(); renderTagModal(); $('tagModal').classList.remove('hidden'); };
+$('tmClose').onclick = () => $('tagModal').classList.add('hidden');
+$('tmTags').addEventListener('click', e => {
+  const b = e.target.closest('[data-t]'); if (!b) return;
+  const t = b.dataset.t; S.tmTags.has(t) ? S.tmTags.delete(t) : S.tmTags.add(t); renderTagModal();
+});
+async function tmMake() {
+  const v = $('tmNew').value.trim().slice(0, 30); if (!v) return;
+  const name = allTags().find(t => tagKey(t) === tagKey(v)) || v;
+  S.extraTags.add(name); S.tmTags.add(name); $('tmNew').value = '';
+  await saveTagsToLib([name]); renderTagModal(); renderTagPick();
+}
+$('tmNewBtn').onclick = tmMake;
+$('tmNew').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); tmMake(); } });
+async function applyTags(add) {
+  const tags = [...S.tmTags]; if (!tags.length) return toast('붙이거나 뗄 태그를 골라 주세요.');
+  const keys = new Set(tags.map(tagKey));
+  const list = visibleSongs().map(s => {
+    const cur = s.tags || [];
+    const next = add ? [...cur, ...tags.filter(t => !cur.some(c => tagKey(c) === tagKey(t)))] : cur.filter(c => !keys.has(tagKey(c)));
+    return next.length !== cur.length ? { s, next } : null;
+  }).filter(Boolean);
+  if (!list.length) return toast(add ? '이미 모든 곡에 붙어 있어요.' : '뗄 곡이 없어요.');
+  for (let k = 0; k < list.length; k += 400) { const b = writeBatch(db); list.slice(k, k + 400).forEach(({ s, next }) => b.update(doc(db, 'rooms', S.room, 'songs', s.id), { tags: next })); await b.commit(); }
+  if (add) saveTagsToLib(tags);
+  $('tagModal').classList.add('hidden');
+  toast(add ? `${list.length}곡에 태그를 붙였어요.` : `${list.length}곡에서 태그를 뗐어요.`);
+}
+$('tmAdd').onclick = () => applyTags(true);
+$('tmRemove').onclick = () => applyTags(false);
 $('search').addEventListener('input', e => { S.q = e.target.value; renderSongs(); });
 $('tags').addEventListener('click', e => { const t = e.target.closest('.tag'); if (!t) return; S.tag = t.dataset.tag; renderTags(); renderSongs(); });
 
@@ -1331,18 +1558,84 @@ $('pList').addEventListener('click', async e => {
     if (await ask('빙고판 삭제', `<b>${esc(b.nick || '이름 없음')}</b>님의 빙고판을 지울까요? 되돌릴 수 없어요.`, '삭제')) { await deleteDoc(doc(db, 'rooms', S.room, 'boards', b.id)); toast('지웠어요.'); }
   }
 });
+// 참여자 빙고판 보기 + 관리자 수정 (S.ve: 수정 중인 내용, 저장 전까지는 이 화면에만)
+S.ve = null;
 function renderView() {
   const b = S.boards.find(x => x.id === S.viewId);
-  if (!b) { $('viewClose').click(); return; }
-  const cells = composeCells(activeConds(), b.cells || [], S.songMap), order = bingoOrder(cells);
-  $('viewTitle').textContent = `${b.nick || '이름 없음'}님 빙고판 · ${order.length}줄`;
-  const el = $('viewBoard'); el.style.setProperty('--n', gridN()); el.className = 'board n' + gridN();
-  el.innerHTML = cells.map(c => `<div class="cell${c.songId?' placed':''}${c.checked?' checked':''}" style="cursor:default">
-    <div class="cond">${esc(c.cond)}</div>${c.songId ? `<div class="song">${esc(c.song)}</div>${c.artist?`<div class="artist">${esc(c.artist)}</div>`:''}` : ''}<span class="stamp">✓</span></div>`).join('');
+  if (!b) { closeView(true); return; }
+  const ed = S.ve;
+  const ids = ed ? ed.cells : (b.cells || []);
+  const cells = composeCells(activeConds(), ids, S.songMap), order = bingoOrder(cells);
+  $('viewTitle').textContent = `${(ed ? ed.nick : b.nick) || '이름 없음'}님 빙고판 · ${order.length}줄`;
+  const el = $('viewBoard'); el.style.setProperty('--n', gridN()); el.className = 'board n' + gridN() + (ed ? ' editing' : '');
+  el.innerHTML = cells.map((c, i) => `<div class="cell${c.songId?' placed':''}${c.checked?' checked':''}${ed && ed.sel === i ? ' picked' : ''}" data-vi="${i}"${ed ? '' : ' style="cursor:default"'}>
+    <div class="cond">${esc(c.cond)}</div>${c.songId ? `<div class="song">${esc(c.song)}</div>${c.artist?`<div class="artist">${esc(c.artist)}</div>`:''}` : ''}<span class="stamp">✓</span>${ed && c.songId ? `<button class="xdel" data-vx="${i}" aria-label="빼기">×</button>` : ''}</div>`).join('');
   renderBingoLog($('viewLog'), order, rewards());
   requestAnimationFrame(() => drawBingoLines(el, order));
+  $('viewEditBtn').hidden = !!ed; $('veTop').hidden = !ed; $('vePick').hidden = !ed; $('viewBtns').hidden = !!ed; $('veBtns').hidden = !ed;
+  if (ed) renderVeList();
 }
-$('viewClose').onclick = () => { S.viewId = null; $('viewModal').classList.add('hidden'); };
+function renderVeList() {
+  const ed = S.ve, q = $('veSearch').value.trim().toLowerCase();
+  const here = new Set(ed.cells.slice(0, NN()).filter(Boolean));
+  const list = S.songs.filter(s => !q || songSearchText(s).includes(q)).sort((a, b) => (here.has(a.id) ? 1 : 0) - (here.has(b.id) ? 1 : 0) || songTitle(a).localeCompare(songTitle(b), 'ko'));
+  $('veList').innerHTML = list.length ? list.map(s => `<div class="verow" data-vs="${esc(s.id)}"><span class="vt">${esc(songTitle(s))}</span>${songArtist(s) ? `<span class="va">${esc(songArtist(s))}</span>` : ''}${
+    here.has(s.id) ? `<span class="badge onboard">${esc(tr('이 빙고판에 있음'))}</span>` : s.used ? `<span class="badge used">${esc(tr('부른 곡'))}</span>` : ''}</div>`).join('')
+    : `<div class="empty">${esc(tr('검색 결과가 없어요.'))}</div>`;
+}
+function veChanged() {
+  const b = S.boards.find(x => x.id === S.viewId); if (!b || !S.ve) return false;
+  const orig = (b.cells || []).slice(0, 25); while (orig.length < 25) orig.push(null);
+  return S.ve.nick !== (b.nick || '') || S.ve.cells.some((v, i) => (v || null) !== (orig[i] || null));
+}
+function closeView(force) {
+  S.viewId = null; S.ve = null; $('veSearch').value = '';
+  $('viewModal').classList.add('hidden');
+}
+$('viewClose').onclick = () => closeView();
+$('viewEditBtn').onclick = () => {
+  const b = S.boards.find(x => x.id === S.viewId); if (!b) return;
+  const cells = (b.cells || []).slice(0, 25); while (cells.length < 25) cells.push(null);
+  S.ve = { nick: b.nick || '', cells, sel: null, baseAt: tms(b.updatedAt) };
+  $('veNick').value = S.ve.nick; $('veSearch').value = '';
+  renderView();
+};
+$('veNick').addEventListener('input', () => { if (S.ve) { S.ve.nick = $('veNick').value.trim().slice(0, 20); renderView(); } });
+$('veSearch').addEventListener('input', () => { if (S.ve) renderVeList(); });
+$('viewBoard').addEventListener('click', e => {
+  const ed = S.ve; if (!ed) return;
+  const x = e.target.closest('[data-vx]');
+  if (x) { ed.cells[+x.dataset.vx] = null; ed.sel = null; renderView(); return; }
+  const cell = e.target.closest('[data-vi]'); if (!cell) return;
+  const i = +cell.dataset.vi;
+  if (ed.sel === null) ed.sel = i;
+  else if (ed.sel === i) ed.sel = null;
+  else if (ed.cells[ed.sel] || ed.cells[i]) { [ed.cells[ed.sel], ed.cells[i]] = [ed.cells[i], ed.cells[ed.sel]]; ed.sel = null; }
+  else ed.sel = i;
+  renderView();
+});
+$('veList').addEventListener('click', e => {
+  const ed = S.ve; const row = e.target.closest('[data-vs]'); if (!ed || !row) return;
+  if (ed.sel === null) return toast('먼저 곡을 넣을 칸을 골라 주세요.');
+  const id = row.dataset.vs, at = ed.cells.slice(0, NN()).indexOf(id);
+  if (at !== -1 && at !== ed.sel) ed.cells[at] = ed.cells[ed.sel] || null;
+  ed.cells[ed.sel] = id; ed.sel = null;
+  renderView();
+});
+$('veCancel').onclick = async () => {
+  if (veChanged() && !await ask('수정 취소', '저장하지 않은 내용이 사라져요. 취소할까요?', '취소하기')) return;
+  S.ve = null; renderView();
+};
+$('veSave').onclick = async () => {
+  const ed = S.ve, b = S.boards.find(x => x.id === S.viewId); if (!ed || !b) return;
+  if (!ed.nick) return toast('닉네임을 적어 주세요.');
+  if (!veChanged()) { S.ve = null; renderView(); return; }
+  if (tms(b.updatedAt) !== ed.baseAt && !await ask('덮어쓰기', '수정하는 동안 시청자가 빙고판을 바꿨어요. 관리자가 고친 내용으로 덮어쓸까요?', '덮어쓰기')) return;
+  try {
+    await setDoc(doc(db, 'rooms', S.room, 'boards', S.viewId), { nick: ed.nick, cells: ed.cells.map(v => v || null), updatedAt: serverTimestamp() });
+    S.ve = null; renderView(); toast('빙고판을 수정했어요. 시청자 화면에도 바로 반영돼요.');
+  } catch (err) { toast('저장하지 못했어요. ' + fbErr(err)); }
+};
 
 // ── 잠금 ──
 $('lockBtn').onclick = async () => {
@@ -1364,7 +1657,7 @@ async function addOne() {
   if (!t) { $('nTitle').focus(); return; }
   if (existsSong(t, a)) { toast('이미 목록에 있는 곡이에요.'); return; }
   const b = writeBatch(db);
-  b.set(doc(collection(db, 'rooms', S.room, 'songs')), { title: t, artist: a, tags: [...S.pickTags], used: false, createdAt: serverTimestamp() });
+  b.set(doc(collection(db, 'rooms', S.room, 'songs')), { title: t, artist: a, tags: [...S.pickTags], used: false, picked: !!(S.meta && S.meta.poolMode === 'picked'), createdAt: serverTimestamp() });
   $('nTitle').value = ''; $('nArtist').value = ''; $('nTitle').focus();
   pushRecent(t);
   await b.commit();
@@ -1372,14 +1665,27 @@ async function addOne() {
 $('nAdd').onclick = addOne;
 $('nTitle').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); addOne(); } });
 $('nArtist').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); addOne(); } });
-$('tagPick').addEventListener('click', e => {
+$('tagPick').addEventListener('click', async e => {
+  const d = e.target.closest('[data-deltag]');
+  if (d) {
+    e.stopPropagation();
+    const t = d.dataset.deltag;
+    S.extraTags.delete(t); S.pickTags.delete(t);
+    try { await setDoc(metaRef, { tagLib: arrayRemove(t) }, { merge: true }); } catch (err) { toast('태그를 지우지 못했어요. ' + fbErr(err)); }
+    renderTagPick(); return;
+  }
   const b = e.target.closest('[data-t]'); if (!b) return;
   const t = b.dataset.t; S.pickTags.has(t) ? S.pickTags.delete(t) : S.pickTags.add(t); renderTagPick();
 });
 $('tagClear').onclick = () => { S.pickTags.clear(); renderTagPick(); };
-function makeTag() {
-  const v = $('newTag').value.trim(); if (!v) return;
-  S.extraTags.add(v); S.pickTags.add(v); $('newTag').value = ''; renderTagPick();
+async function makeTag() {
+  const v = $('newTag').value.trim().slice(0, 30); if (!v) return;
+  const same = allTags().find(t => tagKey(t) === tagKey(v));
+  const name = same || v;
+  S.extraTags.add(name); S.pickTags.add(name); $('newTag').value = ''; renderTagPick();
+  if (same) { toast('이미 있는 태그라서 골라 뒀어요.'); return; }
+  await saveTagsToLib([name]);
+  toast(`“${name}” 태그를 만들었어요.`);
 }
 $('newTagBtn').onclick = makeTag;
 $('newTag').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); makeTag(); } });
@@ -1439,10 +1745,10 @@ $('addSongs').onclick = async () => {
   const list = rows.filter(r => !r.dup).slice(0, 450);
   if (!list.length) return toast('추가할 곡이 없어요.');
   const b = writeBatch(db);
-  list.forEach(r => b.set(doc(collection(db, 'rooms', S.room, 'songs')), { title: r.title, artist: r.artist, tags: r.tags, used: false, createdAt: serverTimestamp() }));
+  list.forEach(r => b.set(doc(collection(db, 'rooms', S.room, 'songs')), { title: r.title, artist: r.artist, tags: r.tags, used: false, picked: !!(S.meta && S.meta.poolMode === 'picked'), createdAt: serverTimestamp() }));
   $('addSongs').disabled = true;
   await b.commit();
-  newTags.forEach(t => S.extraTags.add(t));
+  newTags.forEach(t => S.extraTags.add(t)); saveTagsToLib(newTags);
   $('bulkSongs').value = ''; renderBulkPreview(); renderTagPick();
   toast(`${list.length}곡 추가${newTags.length ? `, 새 태그 ${newTags.join(', ')}` : ''}`);
 };
@@ -1460,10 +1766,19 @@ $('eTags').addEventListener('click', e => {
   const b = e.target.closest('[data-t]'); if (!b) return;
   const t = b.dataset.t; S.editTags.has(t) ? S.editTags.delete(t) : S.editTags.add(t); tagChips($('eTags'), S.editTags);
 });
+async function eMake() {
+  const v = $('eNewTag').value.trim().slice(0, 30); if (!v) return;
+  const name = allTags().find(t => tagKey(t) === tagKey(v)) || v;
+  S.extraTags.add(name); S.editTags.add(name); $('eNewTag').value = '';
+  await saveTagsToLib([name]); tagChips($('eTags'), S.editTags); renderTagPick();
+}
+$('eNewTagBtn').onclick = eMake;
+$('eNewTag').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); eMake(); } });
 $('eCancel').onclick = () => { S.editSong = null; $('songModal').classList.add('hidden'); };
 $('eSave').onclick = async () => {
   const id = S.editSong, t = $('eTitle').value.trim(), a = $('eArtist').value.trim();
   if (!id || !t) return toast('제목을 적어 주세요.');
+  saveTagsToLib([...S.editTags]);
   await updateDoc(doc(db, 'rooms', S.room, 'songs', id), { title: t, artist: a, tags: [...S.editTags], titleJa: $('eTitleJa').value.trim(), artistJa: $('eArtistJa').value.trim() });
   $('eCancel').click(); toast('곡을 수정했어요.');
 };
