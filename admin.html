@@ -404,6 +404,9 @@ details.bulk .sub{margin:8px 0;}
 .verow .vt{font-weight:600;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
 .verow .va{color:var(--g500);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .verow .badge{margin-left:auto;font-size:11px;font-weight:600;padding:2px 7px;border-radius:6px;white-space:nowrap;}
+.board-tools{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.btn-blue.sm{font-size:12px;padding:6px 11px;}
+.cond .nocond{color:var(--g400);font-weight:500;font-style:normal;}
 .modal.wide{max-width:560px;max-height:92vh;overflow:auto;}
 </style>
 <script>if(window.top!==window.self){document.documentElement.style.display='none';try{window.top.location=window.self.location;}catch(e){}}</script>
@@ -412,7 +415,7 @@ details.bulk .sub{margin:8px 0;}
 <body>
 <header>
   <div class="hdr-top">
-    <div class="logo"><span id="roomTitle"></span> <em>노래</em> 빙고<small>관리자 · v16</small></div>
+    <div class="logo"><span id="roomTitle"></span> <em>노래</em> 빙고<small>관리자 · v17</small></div>
     <div class="hdr-r">
       <button class="btn-sm" id="langBtn">日本語</button>
       <button class="btn-sm icon-btn" id="themeBtn" aria-label="다크 모드">🌙</button>
@@ -462,6 +465,10 @@ details.bulk .sub{margin:8px 0;}
 
     <div class="layout">
       <section class="board-wrap">
+        <div class="board-tools">
+          <button class="btn-blue sm" id="randCondBtn">🎲 랜덤 주제</button>
+          <button class="btn-line sm" id="clearCondBtn">🧹 주제 모두 지우기</button>
+        </div>
         <div class="board" id="board"><div class="board-empty" style="grid-column:1/-1">불러오는 중...</div></div>
         <div class="board-hint">각 칸에 시청자들이 어떤 곡을 몇 명이 넣었는지 보여요. 칸을 누르면 전체 목록이, 조건 글자를 누르면 조건 수정이 열려요 (Enter 저장, Tab 다음 칸).</div>
       </section>
@@ -545,17 +552,6 @@ details.bulk .sub{margin:8px 0;}
             <button class="btn-blue" id="addSongs" disabled>모두 추가</button>
           </div>
         </details>
-      </div>
-
-      <div class="card wide">
-        <h2>일본어 표기</h2>
-        <div class="sub">일본어 화면에서 보일 이름이에요. 칸 주제와 태그는 비워 두면 자동으로 번역돼요. 자동 번역이 어색하면 여기서 고쳐 쓰면 돼요. 노래 제목은 자동 번역하지 않아요.</div>
-        <div class="jatabs" id="jaTabs"><button data-jt="cells" class="on">칸 주제</button><button data-jt="songs">노래</button><button data-jt="tags">태그</button></div>
-        <div class="jawrap" id="jaList"></div>
-        <div class="row" style="margin-top:10px;justify-content:flex-end;align-items:center;">
-          <span class="bulk-sum" id="jaSum"></span>
-          <button class="btn-blue" id="jaSave">일본어 표기 저장</button>
-        </div>
       </div>
 
       <div class="card wide">
@@ -963,7 +959,11 @@ const JA = {
   '설정을 불러오지 못했어요.': '設定を読み込めませんでした。', '시청자 빙고판을 불러오지 못했어요.': '視聴者のカードを読み込めませんでした。', '아직 태그가 없어요. 아래에서 새 태그를 만들어 주세요.': 'まだタグがありません。下で新しいタグを作ってください。',
   '크기를 바꾸면 이미 채운 시청자 빙고판의 칸 배치가 달라져요. 새 판을 시작하기 전에 바꾸는 걸 추천해요.': 'サイズを変えると、すでに埋めた視聴者カードの配置が変わります。新しいゲームを始める前に変更するのがおすすめです。',
   '빙고판 크기를 바꿨어요.': 'カードのサイズを変更しました。', '크기 바꾸기': 'サイズ変更', '일본어 표기': '日本語表記', '일본어 화면에서 보일 이름이에요. 비워 두면 원래 이름이 보여요. 기본 조건처럼 자동으로 번역되는 건 흐린 글씨로 미리 보여요.': '日本語画面で表示される名前です。空欄なら元の名前が表示されます。デフォルトのお題のように自動で翻訳されるものは薄い文字で表示されます。',
-  '칸 주제': 'マスのお題', '자동 번역': '自動翻訳', '일본어 화면에서 보일 이름이에요. 칸 주제와 태그는 비워 두면 자동으로 번역돼요. 자동 번역이 어색하면 여기서 고쳐 쓰면 돼요. 노래 제목은 자동 번역하지 않아요.': '日本語画面で表示される名前です。マスのお題とタグは空欄なら自動で翻訳されます。不自然な場合はここで書き直してください。曲名は自動翻訳しません。', '사용 권한이 없는 계정이에요': '利用権限のないアカウントです', '이 계정은 빙고판을 만들거나 관리할 수 없어요. 사이트 관리자에게 권한을 요청해 주세요.': 'このアカウントではビンゴを作成・管理できません。サイト管理者に権限をリクエストしてください。',
+  '칸 주제': 'マスのお題', '🎲 랜덤 주제': '🎲 ランダムお題', '🧹 주제 모두 지우기': '🧹 お題をすべて消す', '+ 주제': '+ お題', '랜덤 주제': 'ランダムお題',
+  '지금 주제를 모두 바꿔요.': '今のお題をすべて入れ替えます。', '시청자가 넣은 곡은 그 자리에 그대로 남아요.': '視聴者が入れた曲はそのまま残ります。', '랜덤으로 바꾸기': 'ランダムにする',
+  '🎲 새 주제로 바꿨어요. 마음에 안 들면 한 번 더 눌러 보세요.': '🎲 新しいお題にしました。気に入らなければもう一度押してみてください。', '빙고판을 먼저 만들어 주세요.': '先にビンゴカードを作ってください。',
+  '이미 주제가 모두 비어 있어요.': 'お題はすでにすべて空です。', '주제 모두 지우기': 'お題をすべて消す', '모든 칸의 주제를 지워요. 빈 칸은 눌러서 새로 적을 수 있어요.': 'すべてのマスのお題を消します。空いたマスはタップして新しく入力できます。',
+  '지우기': '消す', '주제를 모두 지웠어요.': 'お題をすべて消しました。', '자동 번역': '自動翻訳', '일본어 화면에서 보일 이름이에요. 칸 주제와 태그는 비워 두면 자동으로 번역돼요. 자동 번역이 어색하면 여기서 고쳐 쓰면 돼요. 노래 제목은 자동 번역하지 않아요.': '日本語画面で表示される名前です。マスのお題とタグは空欄なら自動で翻訳されます。不自然な場合はここで書き直してください。曲名は自動翻訳しません。', '사용 권한이 없는 계정이에요': '利用権限のないアカウントです', '이 계정은 빙고판을 만들거나 관리할 수 없어요. 사이트 관리자에게 권한을 요청해 주세요.': 'このアカウントではビンゴを作成・管理できません。サイト管理者に権限をリクエストしてください。',
   '관리자 계정 관리': '管理者アカウント管理', '최고 관리자만 보여요': '最高管理者のみ表示',
   '여기에 등록된 계정만 빙고 방을 만들고 관리할 수 있어요. 계정은 먼저 Firebase 콘솔 → Authentication → 사용자 추가에서 만든 뒤, 같은 이메일을 여기에 등록해 주세요. 목록에서 빼면 그 계정은 바로 자기 방을 관리할 수 없게 돼요.': 'ここに登録されたアカウントだけがビンゴルームを作成・管理できます。先にFirebaseコンソール → Authentication → ユーザーを追加 でアカウントを作り、同じメールアドレスをここに登録してください。リストから外すと、そのアカウントはすぐに自分のルームを管理できなくなります。',
   '메모 (예: 누구 계정인지)': 'メモ（例：誰のアカウントか）', '등록': '登録', '메모': 'メモ', '나': '自分',
@@ -1293,7 +1293,7 @@ function renderBoard() {
     const top = entries.slice(0, 3).map(([id, e]) => { const s = S.songMap.get(id);
       return `<div class="ag${s.used?' done':''}"><span class="agt">${esc(songTitle(s))}</span><span class="agn">${e.n}</span></div>`; }).join('');
     return `<div class="cell agg" data-idx="${i}">
-      <div class="cond">${esc(condText(c))}</div>
+      <div class="cond">${esc(condText(c)) || `<span class="nocond">${esc(tr('+ 주제'))}</span>`}</div>
       <div class="agl">${top}</div>
       <div class="agm">${total ? `${entries.length}곡 · ${total}명` : '아직 없음'}</div>
     </div>`;
@@ -1390,7 +1390,7 @@ function readRwEditor() {
 function renderAll() {
   aggregate(); schedulePersistJa();
   renderNowBar(S.songs, s => { const n = S.cnt.get(s.id) || 0; return n ? `<span class="nmine">${esc(tr(n + '명'))}</span>` : ''; });
-  renderStatus(); renderRound(); renderBoard(); renderTags(); renderSongs(); renderTagPick(); renderSung(); renderParticipants(); renderJa();
+  renderStatus(); renderRound(); renderBoard(); renderTags(); renderSongs(); renderTagPick(); renderSung(); renderParticipants();
   if (S.openAgg !== null) renderAgg();
   if (S.viewId) renderView();
 }
@@ -1516,50 +1516,59 @@ async function persistAutoJa() {
   _persistBusy = false;
 }
 
-// ── 일본어 표기 ──
-S.jaTab = 'cells'; S.jaDirty = false;
-function jaRows() {
-  if (S.jaTab === 'cells') return activeConds().map((c, i) => ({ key: c.id, ko: `${i + 1}. ${c.cond}${c.condJaAuto ? ' · ' + tr('자동 번역') : ''}`, fields: [{ f: 'condJa', v: c.condJa || '', ph: KO_JA_DEFAULT[c.cond] || '' }] }));
-  if (S.jaTab === 'songs') return S.songs.slice().sort((a, b) => a.title.localeCompare(b.title, 'ko')).map(s => ({ key: s.id, ko: `${s.title}${s.artist ? ' · ' + s.artist : ''}`, fields: [{ f: 'titleJa', v: s.titleJa || '', ph: tr('일본어 제목') }, { f: 'artistJa', v: s.artistJa || '', ph: s.artist ? tr('일본어 가수') : '' }] }));
-  const map = (S.meta && S.meta.tagJa) || {};
-  return songTags().map(t => ({ key: t, ko: t, fields: [{ f: 'tag', v: map[t] || '', ph: KO_JA_DEFAULT[t] || '' }] }));
-}
-function renderJa(force) {
-  if (S.jaDirty && !force) return;
-  document.querySelectorAll('#jaTabs button').forEach(b => b.classList.toggle('on', b.dataset.jt === S.jaTab));
-  const rows = jaRows();
-  const heads = S.jaTab === 'songs' ? ['곡', '일본어 제목', '일본어 가수'] : S.jaTab === 'tags' ? ['태그', '일본어'] : ['칸 주제', '일본어'];
-  $('jaList').innerHTML = rows.length ? `<table class="jatable"><thead><tr>${heads.map(h => `<th>${esc(tr(h))}</th>`).join('')}</tr></thead><tbody>${
-    rows.map(r => `<tr data-key="${esc(r.key)}"><td class="ko">${esc(r.ko)}</td>${r.fields.map(f => `<td><input class="inp" data-f="${f.f}" data-orig="${esc(f.v)}" value="${esc(f.v)}" placeholder="${esc(f.ph)}"${f.ph === '' && f.f === 'artistJa' ? ' disabled' : ''}></td>`).join('')}</tr>`).join('')
-  }</tbody></table>` : `<div class="empty">${esc(tr('검색 결과가 없어요.'))}</div>`;
-  $('jaSum').textContent = '';
-}
-$('jaTabs').addEventListener('click', async e => {
-  const b = e.target.closest('[data-jt]'); if (!b || b.dataset.jt === S.jaTab) return;
-  if (S.jaDirty && !await ask('일본어 표기', '저장하지 않은 내용이 있어요. 그래도 넘어갈까요?', '넘어가기')) return;
-  S.jaTab = b.dataset.jt; S.jaDirty = false; renderJa(true);
-});
-$('jaList').addEventListener('input', e => {
-  const inp = e.target.closest('input'); if (!inp) return;
-  inp.classList.toggle('changed', inp.value.trim() !== inp.dataset.orig);
-  const n = $('jaList').querySelectorAll('input.changed').length;
-  S.jaDirty = n > 0; $('jaSum').textContent = n ? tr(`${n}개 바뀜`) : '';
-});
-$('jaSave').onclick = async () => {
-  const changed = [...$('jaList').querySelectorAll('input.changed')];
-  if (!changed.length) return toast('바뀐 내용이 없어요.');
+
+// ── 랜덤 주제 목록 (한국어 · 일본어) ──
+const TOPIC_POOL = [
+  ['J-POP','J-POP'],['K-POP','K-POP'],['발라드','バラード'],['록','ロック'],['밴드곡','バンド曲'],['힙합','ヒップホップ'],['R&B','R&B'],['재즈','ジャズ'],
+  ['시티팝','シティポップ'],['트로트 · 엔카','トロット・演歌'],['인디','インディーズ'],['어쿠스틱','アコースティック'],['EDM','EDM'],['보컬로이드','ボカロ'],
+  ['애니송','アニソン'],['게임 음악','ゲーム音楽'],['드라마 OST','ドラマOST'],['영화 주제가','映画の主題歌'],['뮤지컬 넘버','ミュージカルナンバー'],
+  ['디즈니 노래','ディズニーソング'],['동요','童謡'],['CM송','CMソング'],['캐릭터송','キャラソン'],['버추얼 가수 곡','バーチャルシンガーの曲'],
+  ['댄스곡','ダンス曲'],['락발라드','ロックバラード'],['펑크 · 메탈','パンク・メタル'],['시부야계','渋谷系'],
+  ['70·80년대','70・80年代'],['90년대','90年代'],['2000년대','2000年代'],['2010년대','2010年代'],['2020년대','2020年代'],['올해 나온 곡','今年リリースの曲'],
+  ['10년 넘은 곡','10年以上前の曲'],['내가 태어난 해의 곡','自分が生まれた年の曲'],['학창 시절 노래','学生時代の歌'],
+  ['여자 아이돌','女性アイドル'],['남자 아이돌','男性アイドル'],['여자 솔로','女性ソロ'],['남자 솔로','男性ソロ'],['혼성 그룹','男女混合グループ'],
+  ['듀엣곡','デュエット曲'],['듀엣곡 혼자 부르기','デュエット曲をソロで'],['싱어송라이터','シンガーソングライター'],['해외 가수','海外アーティスト'],
+  ['일본 가수','日本のアーティスト'],['한국 가수','韓国のアーティスト'],['데뷔곡','デビュー曲'],['1위 한 곡','1位を取った曲'],['숨은 명곡','隠れた名曲'],
+  ['타이틀곡 아닌 수록곡','アルバム曲（タイトル曲以外）'],['오디션 프로 출신','オーディション番組出身'],
+  ['신나는 곡','ノリのいい曲'],['잔잔한 곡','しっとりした曲'],['눈물 나는 곡','泣ける歌'],['설레는 곡','ときめく歌'],['위로가 되는 곡','励まされる歌'],
+  ['청량한 곡','爽やかな曲'],['몽환적인 곡','幻想的な曲'],['귀여운 곡','かわいい曲'],['멋있는 곡','かっこいい曲'],['웅장한 곡','壮大な曲'],
+  ['새벽 감성','深夜に聴きたい曲'],['드라이브 곡','ドライブソング'],['잠들기 전 듣는 곡','寝る前に聴く歌'],['텐션 올리는 곡','テンションが上がる曲'],
+  ['중독성 있는 곡','クセになる曲'],['그루브 있는 곡','グルーヴィーな曲'],['쓸쓸한 곡','切ない歌'],
+  ['사랑 노래','ラブソング'],['이별 노래','失恋ソング'],['짝사랑 노래','片思いの歌'],['고백 노래','告白ソング'],['우정 노래','友情の歌'],['가족 노래','家族の歌'],
+  ['꿈 · 희망','夢・希望の歌'],['응원가','応援ソング'],['졸업 노래','卒業ソング'],['봄 노래','春の歌'],['여름 노래','夏の歌'],['가을 노래','秋の歌'],
+  ['겨울 노래','冬の歌'],['크리스마스 노래','クリスマスソング'],['밤 노래','夜の歌'],['바다 노래','海の歌'],['하늘 · 별 노래','空・星の歌'],['비 노래','雨の歌'],
+  ['눈 노래','雪の歌'],['꽃 노래','花の歌'],['도시 노래','街の歌'],['여행 노래','旅の歌'],['추억 노래','思い出の歌'],['이기적인 사랑 노래','わがままなラブソング'],
+  ['제목에 숫자','タイトルに数字'],['제목에 색깔','タイトルに色'],['제목에 영어','タイトルに英語'],['제목이 한 단어','タイトルが一語'],['제목이 긴 곡','タイトルが長い曲'],
+  ['제목에 너 · 君 · you','タイトルに「君」「you」'],['제목에 계절','タイトルに季節'],['제목에 날씨','タイトルに天気'],['제목에 동물','タイトルに動物'],
+  ['제목에 음식','タイトルに食べ物'],['제목에 사람 이름','タイトルに人の名前'],['제목에 사랑 · 愛','タイトルに「愛」'],['제목에 장소','タイトルに場所'],
+  ['제목에 밤 · 夜','タイトルに「夜」'],['제목에 기호','タイトルに記号'],['제목에 신체','タイトルに体の部位'],
+  ['고음 도전','高音チャレンジ'],['저음 도전','低音チャレンジ'],['랩 파트 있는 곡','ラップパートのある曲'],['빠른 곡','速い曲'],['느린 곡','ゆっくりな曲'],
+  ['영어 노래','英語の歌'],['일본어 노래','日本語の歌'],['한국어 노래','韓国語の歌'],['처음 불러보는 곡','初めて歌う曲'],['오랜만에 부르는 곡','久しぶりに歌う曲'],
+  ['키 바꿔서 부르기','キーを変えて歌う'],['아카펠라로','アカペラで'],['안무 따라 하며','振り付けしながら'],['감정 몰입해서','感情込めて'],['속삭이듯','ささやくように'],
+  ['내가 자주 부르는 곡','よく歌う曲'],['나의 18번','十八番'],['시청자 추천곡','リスナーおすすめ'],['시청자 신청곡','リクエスト曲'],['방송 첫 공개','配信初披露'],
+  ['요즘 꽂힌 곡','最近ハマってる曲'],['인생곡','人生の一曲'],['노래방 단골곡','カラオケ定番曲'],['첫사랑 생각나는 곡','初恋を思い出す歌'],['부모님이 좋아하는 곡','親が好きな歌'],
+  ['의외의 선곡','意外な選曲'],['자유 선곡','自由選曲'],['추억의 게임 음악','思い出のゲーム音楽'],
+  ['애니 오프닝','アニメOP'],['애니 엔딩','アニメED'],['지브리','ジブリ'],['틱톡 유행곡','TikTokで流行った曲'],['쇼츠 · 릴스 유행곡','ショート動画で流行った曲'],
+  ['예능에 나온 곡','バラエティで流れた曲'],['드라마 삽입곡','ドラマ挿入歌'],['게임 주제가','ゲーム主題歌'],['특촬 · 히어로','特撮・ヒーロー'],['아이돌 애니','アイドルアニメ'],
+];
+function shuffle(a) { const r = new Uint32Array(1); for (let i = a.length - 1; i > 0; i--) { crypto.getRandomValues(r); const j = r[0] % (i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+async function setAllConds(list, msg) {
   const b = writeBatch(db);
-  if (S.jaTab === 'tags') {
-    const map = { ...((S.meta && S.meta.tagJa) || {}) };
-    changed.forEach(inp => { const k = inp.closest('tr').dataset.key, v = inp.value.trim(); if (v) map[k] = v; else delete map[k]; });
-    b.set(metaRef, { tagJa: map }, { merge: true });
-  } else {
-    const byKey = {};
-    changed.forEach(inp => { const k = inp.closest('tr').dataset.key; (byKey[k] = byKey[k] || {})[inp.dataset.f] = inp.value.trim(); });
-    Object.entries(byKey).forEach(([k, upd]) => { if (S.jaTab === 'cells') upd.condJaAuto = false; b.update(doc(db, 'rooms', S.room, S.jaTab === 'cells' ? 'cells' : 'songs', k), upd); });
-  }
-  try { await b.commit(); S.jaDirty = false; renderJa(true); toast(tr(`일본어 표기 ${changed.length}개를 저장했어요.`)); }
-  catch (e) { toast('저장하지 못했어요. ' + fbErr(e)); }
+  S.conds.forEach((c, i) => { const t = list[i] || ['', '']; b.update(doc(db, 'rooms', S.room, 'cells', c.id), { cond: t[0], condJa: t[1], condJaAuto: false }); });
+  await b.commit(); toast(msg);
+}
+const boardsFilled = () => S.boards.some(b => (b.cells || []).some(Boolean));
+$('randCondBtn').onclick = async () => {
+  if (S.conds.length < 25) return toast('빙고판을 먼저 만들어 주세요.');
+  const hasAny = S.conds.some(c => c.cond);
+  if (hasAny && !await ask('랜덤 주제', `${tr('지금 주제를 모두 바꿔요.')}${boardsFilled() ? '<br>' + tr('시청자가 넣은 곡은 그 자리에 그대로 남아요.') : ''}`, '랜덤으로 바꾸기')) return;
+  await setAllConds(shuffle(TOPIC_POOL.slice()).slice(0, 25), '🎲 새 주제로 바꿨어요. 마음에 안 들면 한 번 더 눌러 보세요.');
+};
+$('clearCondBtn').onclick = async () => {
+  if (S.conds.length < 25) return;
+  if (!S.conds.some(c => c.cond)) return toast('이미 주제가 모두 비어 있어요.');
+  if (!await ask('주제 모두 지우기', `${tr('모든 칸의 주제를 지워요. 빈 칸은 눌러서 새로 적을 수 있어요.')}${boardsFilled() ? '<br>' + tr('시청자가 넣은 곡은 그 자리에 그대로 남아요.') : ''}`, '지우기')) return;
+  await setAllConds([], '주제를 모두 지웠어요.');
 };
 
 // ── 칸 누르기: 조건 수정 / 곡 현황 ──
