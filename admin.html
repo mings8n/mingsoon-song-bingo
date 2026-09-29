@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>밍쑨 노래 빙고 — 관리자</title>
+<title>노래 빙고 — 관리자</title>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
 <style>
 
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Pretendard',-apple-system,sans-serif;}
 :root{
+  --bg:#f8fafc;--card:#ffffff;--toast:#1f2937;--amber-bg:#fffbeb;--amber-fg:#92400e;
   --blue:#2563eb;--blue-lt:#dbeafe;--blue-md:#93c5fd;--blue-dk:#1d4ed8;--blue-xl:#eff6ff;
   --g50:#f9fafb;--g100:#f3f4f6;--g200:#e5e7eb;--g300:#d1d5db;
   --g400:#9ca3af;--g500:#6b7280;--g600:#4b5563;--g800:#1f2937;
@@ -16,8 +17,11 @@
   --green:#059669;--green-lt:#d1fae5;
   --red:#dc2626;--red-lt:#fee2e2;
 }
-body{background:#f8fafc;min-height:100vh;color:var(--g800);}
-header{background:white;border-bottom:1px solid var(--g200);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+body{background:var(--bg);min-height:100vh;color:var(--g800);transition:background .2s;}
+header{background:var(--card);border-bottom:1px solid var(--g200);position:sticky;top:0;z-index:50;}
+.hdr-top{padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.hdr-r{display:flex;align-items:center;gap:6px;}
+.icon-btn{font-size:15px;padding:5px 9px;line-height:1.2;}
 .logo{font-size:18px;font-weight:600;letter-spacing:-.3px;}
 .logo em{color:var(--blue);font-style:normal;}
 .btn-sm{font-size:13px;padding:6px 14px;border:1px solid var(--g200);border-radius:8px;background:transparent;color:var(--g600);cursor:pointer;font-family:inherit;text-decoration:none;display:inline-block;}
@@ -25,7 +29,7 @@ header{background:white;border-bottom:1px solid var(--g200);padding:14px 20px;di
 main{max-width:1120px;margin:0 auto;padding:20px 16px 48px;}
 
 /* 상태 바 */
-.statusbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:white;border:1px solid var(--g200);border-radius:12px;padding:12px 14px;margin-bottom:12px;}
+.statusbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--card);border:1px solid var(--g200);border-radius:12px;padding:12px 14px;margin-bottom:12px;}
 .pill{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:5px 11px;border-radius:999px;}
 .pill.lock{background:var(--g100);color:var(--g600);}
 .pill.open{background:var(--green-lt);color:var(--green);}
@@ -39,32 +43,32 @@ main{max-width:1120px;margin:0 auto;padding:20px 16px 48px;}
 
 /* 보상 */
 .rewards{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
-.rw{display:flex;align-items:center;gap:8px;background:white;border:1px solid var(--g200);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--g600);}
+.rw{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--g200);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--g600);}
 .rw .n{font-weight:700;color:var(--g800);font-size:12px;background:var(--g100);border-radius:6px;padding:2px 7px;}
 .rw.hit{border-color:var(--blue-md);background:var(--blue-xl);color:var(--blue-dk);}
 .rw.hit .n{background:var(--blue);color:white;}
-.rw.final{border-color:var(--amber-md);background:#fffbeb;color:#92400e;font-weight:600;}
+.rw.final{border-color:var(--amber-md);background:var(--amber-bg);color:var(--amber-fg);font-weight:600;}
 .rw.final .n{background:var(--amber);color:white;}
 .rw.final.hit{background:var(--amber);border-color:var(--amber);color:white;}
-.rw.final.hit .n{background:white;color:#b45309;}
+.rw.final.hit .n{background:#fff;color:#b45309;}
 
 /* 레이아웃 */
 .layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start;}
 @media(max-width:860px){.layout{grid-template-columns:1fr;}}
 
 /* 빙고판 */
-.board-wrap{background:white;border:1px solid var(--g200);border-radius:14px;padding:14px;}
-.board{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+.board-wrap{background:var(--card);border:1px solid var(--g200);border-radius:14px;padding:14px;}
+.board{display:grid;grid-template-columns:repeat(var(--n,5),minmax(0,1fr));gap:8px;}
 .cell{position:relative;aspect-ratio:1;border:1.5px solid var(--g200);border-radius:10px;background:var(--g50);padding:8px;display:flex;flex-direction:column;overflow:hidden;cursor:default;transition:border-color .12s,background .12s;}
-.cell .cond{font-size:12px;font-weight:600;color:var(--g500);line-height:1.25;word-break:keep-all;}
+.cell .cond{font-size:15px;font-weight:700;color:var(--g500);line-height:1.25;word-break:keep-all;}
 .cell .song{margin-top:auto;font-size:13px;font-weight:700;line-height:1.25;color:var(--g800);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all;}
 .cell .artist{font-size:11px;color:var(--g500);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.cell.placed{background:white;border-color:var(--blue-md);}
+.cell.placed{background:var(--card);border-color:var(--blue-md);}
 .cell.checked{background:var(--blue);border-color:var(--blue);}
 .cell.checked .cond{color:rgba(255,255,255,.75);}
 .cell.checked .song{color:white;}
 .cell.checked .artist{color:rgba(255,255,255,.75);}
-.cell .stamp{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:white;color:var(--blue);display:none;align-items:center;justify-content:center;font-size:13px;font-weight:800;}
+.cell .stamp{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:#fff;color:var(--blue);display:none;align-items:center;justify-content:center;font-size:13px;font-weight:800;}
 .cell.checked .stamp{display:flex;}
 .cell.target{border-style:dashed;border-color:var(--blue);background:var(--blue-xl);}
 .cell.pickable{cursor:pointer;}
@@ -74,25 +78,25 @@ main{max-width:1120px;margin:0 auto;padding:20px 16px 48px;}
   .board-wrap{padding:8px;}
   .board{gap:4px;}
   .cell{padding:5px;border-radius:7px;}
-  .cell .cond{font-size:10px;}
+  .cell .cond{font-size:12px;}
   .cell .song{font-size:11px;}
   .cell .artist{display:none;}
   .cell .stamp{width:16px;height:16px;font-size:10px;top:3px;right:3px;}
 }
 
 /* 노래 풀 */
-.pool{background:white;border:1px solid var(--g200);border-radius:14px;padding:14px;position:sticky;top:70px;max-height:calc(100vh - 90px);display:flex;flex-direction:column;}
+.pool{background:var(--card);border:1px solid var(--g200);border-radius:14px;padding:14px;position:sticky;top:calc(var(--hdr,70px) + 12px);max-height:calc(100vh - var(--hdr,70px) - 24px);display:flex;flex-direction:column;}
 @media(max-width:860px){.pool{position:static;max-height:none;}}
 .pool h2{font-size:15px;font-weight:700;margin-bottom:2px;}
 .pool .sub{font-size:12px;color:var(--g400);margin-bottom:10px;}
 .search{width:100%;padding:9px 12px;border:1px solid var(--g200);border-radius:8px;font-size:14px;font-family:inherit;background:var(--g50);outline:none;}
-.search:focus{border-color:var(--blue);background:white;}
+.search:focus{border-color:var(--blue);background:var(--card);}
 .tags{display:flex;gap:5px;flex-wrap:wrap;margin:10px 0;}
-.tag{font-size:12px;padding:4px 9px;border-radius:999px;border:1px solid var(--g200);background:white;color:var(--g600);cursor:pointer;font-family:inherit;}
+.tag{font-size:12px;padding:4px 9px;border-radius:999px;border:1px solid var(--g200);background:var(--card);color:var(--g600);cursor:pointer;font-family:inherit;}
 .tag.on{background:var(--g800);border-color:var(--g800);color:white;}
 .songs{overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:6px;min-height:120px;}
 @media(max-width:860px){.songs{max-height:420px;}}
-.song-item{border:1px solid var(--g200);border-radius:9px;padding:9px 11px;background:white;cursor:grab;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:pan-y;display:flex;align-items:center;gap:10px;}
+.song-item{border:1px solid var(--g200);border-radius:9px;padding:9px 11px;background:var(--card);cursor:grab;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:pan-y;display:flex;align-items:center;gap:10px;}
 .song-item:hover{border-color:var(--blue-md);}
 .song-item.sel{border-color:var(--blue);background:var(--blue-xl);box-shadow:0 0 0 2px var(--blue-lt);}
 .song-item .grip{color:var(--g300);font-size:14px;letter-spacing:-2px;}
@@ -113,7 +117,7 @@ main{max-width:1120px;margin:0 auto;padding:20px 16px 48px;}
 /* 모달 */
 .overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px;}
 .overlay.hidden{display:none;}
-.modal{background:white;border-radius:14px;padding:22px;width:100%;max-width:380px;}
+.modal{background:var(--card);border-radius:14px;padding:22px;width:100%;max-width:380px;}
 .modal h3{font-size:16px;font-weight:700;margin-bottom:10px;}
 .modal p{font-size:14px;color:var(--g600);line-height:1.6;}
 .modal p b{color:var(--g800);}
@@ -124,12 +128,12 @@ main{max-width:1120px;margin:0 auto;padding:20px 16px 48px;}
 .btn-confirm:hover{background:var(--blue-dk);}
 
 /* 빙고 축하 */
-.celebrate{background:white;border-radius:18px;padding:28px 24px;text-align:center;max-width:340px;width:100%;}
+.celebrate{background:var(--card);border-radius:18px;padding:28px 24px;text-align:center;max-width:340px;width:100%;}
 .celebrate .big{font-size:40px;font-weight:900;color:var(--blue);letter-spacing:-1px;}
 .celebrate.final .big{color:var(--amber);}
 .celebrate .rtext{margin-top:8px;font-size:15px;color:var(--g600);}
 
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--g800);color:white;font-size:14px;padding:10px 16px;border-radius:10px;z-index:300;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw;text-align:center;}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--toast);color:white;font-size:14px;padding:10px 16px;border-radius:10px;z-index:300;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw;text-align:center;}
 .toast.show{opacity:1;}
 @media(prefers-reduced-motion:reduce){.pill.open .dot{animation:none;}}
 
@@ -155,7 +159,7 @@ main{max-width:1120px;margin:0 auto;padding:20px 16px 48px;}
 .song-item .tg{margin-top:1px;}
 
 /* 부른 순서 */
-.sung-wrap{background:white;border:1px solid var(--g200);border-radius:14px;padding:14px;margin-top:16px;}
+.sung-wrap{background:var(--card);border:1px solid var(--g200);border-radius:14px;padding:14px;margin-top:16px;}
 .sung-wrap h2{font-size:15px;font-weight:700;display:flex;align-items:baseline;gap:8px;}
 .sung-wrap h2 span{font-size:13px;font-weight:500;color:var(--g400);}
 .sung-list{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px;margin-top:10px;}
@@ -178,29 +182,77 @@ main{max-width:1120px;margin:0 auto;padding:20px 16px 48px;}
 .cell.movable{cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;}
 .cell.placed .cond{padding-right:18px;}
 .pool.droptarget{border-color:var(--red);box-shadow:0 0 0 3px var(--red-lt);}
-.pool.droptarget::after{content:'여기에 놓으면 빙고판에서 빠져요';position:absolute;left:14px;right:14px;top:10px;background:var(--red);color:white;font-size:13px;font-weight:600;text-align:center;padding:8px;border-radius:8px;}
+.pool.droptarget::after{content:attr(data-drop);position:absolute;left:14px;right:14px;top:10px;background:var(--red);color:white;font-size:13px;font-weight:600;text-align:center;padding:8px;border-radius:8px;}
 .pool{position:sticky;}
-@media(max-width:860px){.pool{position:relative;}}
+@media(max-width:860px){.pool{position:relative;top:0;}}
 @media(max-width:560px){.cell .xdel{width:16px;height:16px;line-height:16px;font-size:11px;top:2px;right:2px;}}
 .sung .sops{display:flex;gap:3px;flex:none;}
-.sung .sops button{border:1px solid var(--g200);background:white;border-radius:6px;font-size:12px;width:26px;height:26px;cursor:pointer;color:var(--g600);font-family:inherit;padding:0;}
+.sung .sops button{border:1px solid var(--g200);background:var(--card);border-radius:6px;font-size:12px;width:26px;height:26px;cursor:pointer;color:var(--g600);font-family:inherit;padding:0;}
 .sung .sops button:hover{background:var(--g100);}
 .sung .sops button:disabled{opacity:.35;cursor:default;}
 .sung .sops button.del:hover{background:var(--red-lt);color:var(--red);}
 
+/* 판 크기별 글자 */
+.board.n4 .cell .cond{font-size:17px;}
+.board.n4 .cell .song{font-size:15px;}
+.board.n3 .cell .cond{font-size:20px;}
+.board.n3 .cell .song{font-size:18px;}
+.board.n3 .cell .artist{font-size:13px;}
+@media(max-width:560px){
+  .board.n4 .cell .cond{font-size:13px;} .board.n4 .cell .song{font-size:12px;}
+  .board.n3 .cell .cond{font-size:15px;} .board.n3 .cell .song{font-size:14px;}
+}
+
+/* 최근 부른 곡 (최신 곡이 왼쪽) */
+.nowbar{display:flex;align-items:center;gap:10px;padding:8px 20px 10px;border-top:1px solid var(--g100);}
+.nowbar[hidden]{display:none;}
+.now-label{flex:none;font-size:12px;font-weight:700;color:var(--g500);}
+.now-list{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px;min-width:0;}
+.now-chip{flex:none;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--g200);background:var(--g50);border-radius:999px;padding:4px 11px 4px 4px;font-size:13px;max-width:260px;}
+.now-chip .nno{width:20px;height:20px;border-radius:50%;background:var(--g200);color:var(--g600);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;}
+.now-chip .nt{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.now-chip .na{font-size:11px;color:var(--g500);white-space:nowrap;}
+.now-chip .nmine{font-size:11px;font-weight:700;color:var(--blue);white-space:nowrap;}
+.now-chip.latest{background:var(--blue);border-color:var(--blue);color:#fff;padding-right:13px;}
+.now-chip.latest .nno{background:#fff;color:var(--blue);}
+.now-chip.latest .na{color:rgba(255,255,255,.8);}
+.now-chip.latest .nmine{color:#fff;}
+.now-chip.pop{animation:nowpop .6s ease-out;}
+@keyframes nowpop{0%{transform:translateX(-24px);opacity:0;}60%{transform:translateX(3px);opacity:1;}100%{transform:none;}}
+@media(max-width:560px){.hdr-top{padding:10px 12px;}.nowbar{padding:6px 12px 8px;}.now-label{display:none;}}
+@media(prefers-reduced-motion:reduce){.now-chip.pop{animation:none;}}
+
+/* 입력칸 글자색 */
+input,textarea,select{color:var(--g800);}
+
+/* ── 다크 모드 ── */
+[data-theme="dark"]{
+  --bg:#0b0f17;--card:#141a24;--toast:#2a3446;
+  --g50:#1a212d;--g100:#212a38;--g200:#2c3646;--g300:#3c4758;--g400:#7d889b;--g500:#9aa5b8;--g600:#b9c2d1;--g800:#e8edf5;
+  --blue:#3b82f6;--blue-dk:#60a5fa;--blue-lt:#1e3a6b;--blue-md:#3d63a8;--blue-xl:#15213a;
+  --green:#34d399;--green-lt:#0f2f25;--red:#f87171;--red-lt:#3a1818;
+  --amber-lt:#3a2b0b;--amber-md:#6b4e15;--amber-bg:#2a2010;--amber-fg:#fbbf24;
+  color-scheme:dark;
+}
+[data-theme="dark"] [style*="--tbd"]{--tb:var(--tbd)!important;--tf:var(--tfd)!important;--tl:var(--tld)!important;}
+[data-theme="dark"] .tag.on:not([style]){background:var(--blue);border-color:var(--blue);color:#fff;}
+[data-theme="dark"] .overlay{background:rgba(0,0,0,.6);}
+[data-theme="dark"] .cell.checked{background:#2563eb;border-color:#2563eb;}
+[data-theme="dark"] .toast{border:1px solid var(--g300);}
+
 .logo small{font-size:12px;font-weight:500;color:var(--g400);margin-left:8px;}
 .hdr-r{display:flex;gap:6px;}
-.login-card{max-width:360px;margin:60px auto;background:white;border:1px solid var(--g200);border-radius:14px;padding:26px;}
+.login-card{max-width:360px;margin:60px auto;background:var(--card);border:1px solid var(--g200);border-radius:14px;padding:26px;}
 .login-card h2{font-size:18px;font-weight:700;margin-bottom:6px;}
 .login-card p{font-size:13px;color:var(--g400);margin-bottom:16px;}
 .login-card .row{display:flex;gap:8px;margin-bottom:8px;}
 .inp{flex:1;width:100%;min-width:0;padding:9px 12px;border:1px solid var(--g200);border-radius:8px;font-size:14px;font-family:inherit;background:var(--g50);outline:none;}
-.inp:focus{border-color:var(--blue);background:white;}
+.inp:focus{border-color:var(--blue);background:var(--card);}
 textarea.inp{resize:vertical;line-height:1.5;}
 .btn-blue{background:var(--blue);color:white;border:none;border-radius:8px;padding:9px 16px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;}
 .btn-blue:hover{background:var(--blue-dk);}
 .btn-blue:disabled{background:var(--g300);cursor:not-allowed;}
-.btn-line{background:white;color:var(--g600);border:1px solid var(--g200);border-radius:8px;padding:9px 14px;font-size:14px;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.btn-line{background:var(--card);color:var(--g600);border:1px solid var(--g200);border-radius:8px;padding:9px 14px;font-size:14px;cursor:pointer;font-family:inherit;white-space:nowrap;}
 .btn-line:hover{background:var(--g100);}
 .btn-danger{background:var(--red-lt);border:1px solid #fca5a5;color:var(--red);border-radius:8px;padding:9px 14px;font-size:14px;cursor:pointer;font-family:inherit;font-weight:500;}
 .err{font-size:13px;color:var(--red);display:none;margin-top:6px;}
@@ -216,7 +268,7 @@ textarea.inp{resize:vertical;line-height:1.5;}
 .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px;}
 .cards .wide{grid-column:1/-1;}
 @media(max-width:860px){.cards{grid-template-columns:1fr;}}
-.card{background:white;border:1px solid var(--g200);border-radius:14px;padding:16px;}
+.card{background:var(--card);border:1px solid var(--g200);border-radius:14px;padding:16px;}
 .card h2{font-size:15px;font-weight:700;margin-bottom:4px;}
 .card .sub{font-size:12px;color:var(--g400);margin-bottom:12px;line-height:1.5;}
 .card .row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
@@ -251,7 +303,7 @@ details.bulk .sub{margin:8px 0;}
 .cell .cond{cursor:text;border-radius:5px;padding:1px 3px;margin:-1px -3px;}
 .cell .cond:hover{background:rgba(37,99,235,.1);color:var(--blue-dk);}
 .cell.checked .cond:hover{background:rgba(255,255,255,.2);color:white;}
-.cond-edit{width:100%;font-size:12px;font-weight:600;line-height:1.3;border:1.5px solid var(--blue);border-radius:6px;padding:3px 5px;resize:none;font-family:inherit;background:white;color:var(--g800);outline:none;position:relative;z-index:5;}
+.cond-edit{width:100%;font-size:12px;font-weight:600;line-height:1.3;border:1.5px solid var(--blue);border-radius:6px;padding:3px 5px;resize:none;font-family:inherit;background:var(--card);color:var(--g800);outline:none;position:relative;z-index:5;}
 .hist{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;}
 .hist span{font-size:12px;background:var(--g100);color:var(--g600);border-radius:6px;padding:3px 8px;}
 .rw-row{display:grid;grid-template-columns:auto 64px auto 1fr auto auto;gap:6px;align-items:center;margin-bottom:6px;font-size:13px;color:var(--g600);}
@@ -260,7 +312,7 @@ details.bulk .sub{margin:8px 0;}
 .xbtn:hover{color:var(--red);}
 
 .song-item .ops{display:flex;gap:3px;margin-left:6px;flex:none;}
-.song-item .ops button{border:1px solid var(--g200);background:white;border-radius:6px;font-size:11px;padding:4px 7px;cursor:pointer;color:var(--g600);font-family:inherit;white-space:nowrap;}
+.song-item .ops button{border:1px solid var(--g200);background:var(--card);border-radius:6px;font-size:11px;padding:4px 7px;cursor:pointer;color:var(--g600);font-family:inherit;white-space:nowrap;}
 .song-item .ops button:hover{background:var(--g100);}
 .song-item .ops button.sing{border-color:var(--blue-md);color:var(--blue-dk);background:var(--blue-xl);font-weight:600;}
 .song-item.off{cursor:default;}
@@ -271,7 +323,7 @@ details.bulk .sub{margin:8px 0;}
 .mcol button{padding:10px;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit;font-weight:500;}
 .songbox{background:var(--g50);border:1px solid var(--g200);border-radius:8px;padding:10px 12px;font-size:14px;margin-top:4px;}
 .songbox .st{font-size:12px;color:var(--blue);margin-top:2px;}
-.cell.agg{background:white;cursor:pointer;}
+.cell.agg{background:var(--card);cursor:pointer;}
 .cell.agg:hover{border-color:var(--blue-md);}
 .agl{margin-top:6px;display:flex;flex-direction:column;gap:2px;min-height:0;overflow:hidden;}
 .ag{display:flex;justify-content:space-between;gap:4px;font-size:12px;line-height:1.35;}
@@ -294,32 +346,58 @@ details.bulk .sub{margin:8px 0;}
 .ptable .bn{font-weight:800;color:var(--blue);}
 .ptable .rwl{font-size:12px;color:var(--g600);}
 .ptable .ops{white-space:nowrap;text-align:right;}
-.ptable .ops button{border:1px solid var(--g200);background:white;border-radius:6px;font-size:12px;padding:4px 8px;cursor:pointer;color:var(--g600);font-family:inherit;margin-left:3px;}
+.ptable .ops button{border:1px solid var(--g200);background:var(--card);border-radius:6px;font-size:12px;padding:4px 8px;cursor:pointer;color:var(--g600);font-family:inherit;margin-left:3px;}
 .ptable .ops button:hover{background:var(--g100);}
 .ptable .ops button.del:hover{background:var(--red-lt);color:var(--red);}
 .pwrap{overflow-x:auto;}
 .pfilter{max-width:240px;margin-bottom:8px;padding:7px 11px;font-size:13px;}
+.flabel{display:block;font-size:13px;font-weight:600;color:var(--g600);margin:12px 0 6px;}
+.flabel span{font-weight:400;color:var(--g400);font-size:12px;margin-left:4px;}
+.slugprev{font-size:12px;color:var(--blue-dk);word-break:break-all;min-height:16px;}
+.setgrid .flabel{margin-top:4px;}
+.seg{display:inline-flex;border:1px solid var(--g200);border-radius:9px;overflow:hidden;}
+.seg button{border:none;background:var(--card);color:var(--g600);font-size:14px;font-weight:600;padding:8px 16px;cursor:pointer;font-family:inherit;}
+.seg button+button{border-left:1px solid var(--g200);}
+.seg button.on{background:var(--blue);color:#fff;}
 .modal.wide{max-width:560px;max-height:92vh;overflow:auto;}
 </style>
+<script>try{var t=localStorage.getItem('msbingo-theme');if(!t){var m=document.cookie.match(/(?:^|; )msbingo-theme=([^;]*)/);t=m?m[1]:null;}if(!t)t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t;}catch(e){}</script>
 </head>
 <body>
 <header>
-  <div class="logo">밍쑨 <em>노래</em> 빙고<small>관리자 · v7</small></div>
-  <div class="hdr-r">
-    <a href="index.html" class="btn-sm">시청자 화면</a>
-    <button class="btn-sm" id="logoutBtn" style="display:none;">로그아웃</button>
+  <div class="hdr-top">
+    <div class="logo"><span id="roomTitle"></span> <em>노래</em> 빙고<small>관리자 · v9</small></div>
+    <div class="hdr-r">
+      <button class="btn-sm" id="langBtn">日本語</button>
+      <button class="btn-sm icon-btn" id="themeBtn" aria-label="다크 모드">🌙</button>
+      <a href="index.html" class="btn-sm" id="viewerLink" target="_blank" rel="noopener">시청자 화면</a>
+      <button class="btn-sm" id="logoutBtn" style="display:none;">로그아웃</button>
+    </div>
   </div>
+  <div class="nowbar" id="nowBar" hidden><span class="now-label">최근 부른 곡</span><div class="now-list" id="nowList"></div></div>
 </header>
 <main>
   <div id="loginBox" class="login-card">
     <h2>관리자 로그인</h2>
-    <p>쿠폰 관리자와 같은 계정으로 로그인하면 돼요.</p>
+    <p>받은 관리자 계정으로 로그인해 주세요.</p>
     <div class="row"><input class="inp" type="email" id="emailInput" placeholder="이메일"></div>
     <div class="row">
       <input class="inp" type="password" id="pwInput" placeholder="비밀번호">
       <button class="btn-blue" id="loginBtn">로그인</button>
     </div>
     <div class="err" id="pwErr">이메일 또는 비밀번호가 틀렸습니다.</div>
+  </div>
+
+  <div id="roomBox" class="login-card" style="display:none;max-width:440px;">
+    <h2>내 빙고 방 만들기</h2>
+    <p>계정마다 방이 하나씩 생겨요. 조건, 노래 목록, 시청자 빙고판이 모두 방별로 따로 저장돼요.</p>
+    <label class="flabel">방 이름 <span>화면 위에 “○○ 노래 빙고”로 보여요</span></label>
+    <div class="row"><input class="inp" id="roomNameIn" maxlength="20" placeholder="예: 밍쑨"></div>
+    <label class="flabel">방 주소 <span>영문 소문자, 숫자, - 로 3~30자. 나중에 못 바꿔요</span></label>
+    <div class="row"><input class="inp" id="roomSlug" maxlength="30" placeholder="예: mingsoon" autocomplete="off" autocapitalize="off"></div>
+    <div class="slugprev" id="slugPrev"></div>
+    <label class="chk" id="importWrap" style="display:none;margin:10px 0 4px;"><input type="checkbox" id="importLegacy" checked>예전에 쓰던 빙고 데이터(조건, 노래 목록, 보상, 시청자 빙고판) 가져오기</label>
+    <div class="row" style="margin-top:12px;"><button class="btn-blue" id="roomCreate" style="flex:1;">방 만들기</button></div>
   </div>
 
   <div id="adminWrap">
@@ -351,6 +429,20 @@ details.bulk .sub{margin:8px 0;}
     </section>
 
     <div class="cards">
+      <div class="card wide">
+        <h2>방 설정</h2>
+        <div class="sub">시청자에게는 아래 링크를 공유해 주세요. 방마다 링크가 달라요.</div>
+        <div class="setgrid">
+          <label class="flabel">시청자 링크</label>
+          <div class="row"><input class="inp" id="shareUrl" readonly><button class="btn-blue" id="copyUrl">복사</button></div>
+          <label class="flabel">방 이름</label>
+          <div class="row"><input class="inp" id="roomNameEdit" maxlength="20"><button class="btn-line" id="roomNameSave">저장</button></div>
+          <label class="flabel">빙고판 크기</label>
+          <div class="seg" id="sizeSeg"><button data-size="3">3×3</button><button data-size="4">4×4</button><button data-size="5">5×5</button></div>
+        </div>
+        <div class="sub" style="margin:10px 0 0;"><span>방 주소</span> <b id="roomSlugShow"></b> · <span>로그인 계정</span> <span id="myEmail"></span></div>
+      </div>
+
       <div class="card wide">
         <h2>참여자 빙고판</h2>
         <div class="sub">빙고 줄 수가 많은 순서예요. 보기를 누르면 그 사람 빙고판을 볼 수 있어요.</div>
@@ -442,7 +534,7 @@ details.bulk .sub{margin:8px 0;}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, doc, onSnapshot, setDoc, updateDoc, deleteDoc, writeBatch, getDoc, serverTimestamp, Timestamp }
+import { getFirestore, collection, doc, onSnapshot, setDoc, updateDoc, deleteDoc, writeBatch, getDoc, getDocs, query, where, limit, serverTimestamp, Timestamp }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -459,13 +551,33 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// ── 공통: 빙고 줄 계산 ──
-const LINES = [], LINE_NAMES = [];
-for (let r = 0; r < 5; r++) { LINES.push([0,1,2,3,4].map(c => r*5+c)); LINE_NAMES.push(`가로 ${r+1}번째 줄`); }
-for (let c = 0; c < 5; c++) { LINES.push([0,1,2,3,4].map(r => r*5+c)); LINE_NAMES.push(`세로 ${c+1}번째 줄`); }
-LINES.push([0,6,12,18,24], [4,8,12,16,20]); LINE_NAMES.push('대각선 ↘', '대각선 ↙');
+// ── 저장소 (localStorage + 쿠키 백업: 브라우저를 껐다 켜도 유지) ──
+const store = {
+  get(k) {
+    try { const v = localStorage.getItem(k); if (v !== null) return v; } catch {}
+    const m = document.cookie.match(new RegExp('(?:^|; )' + k + '=([^;]*)'));
+    return m ? decodeURIComponent(m[1]) : null;
+  },
+  set(k, v) {
+    try { localStorage.setItem(k, v); } catch {}
+    try { document.cookie = `${k}=${encodeURIComponent(v)}; max-age=31536000; path=/; SameSite=Lax`; } catch {}
+  }
+};
+const LANG = (() => { const v = store.get('msbingo-lang'); if (v === 'ko' || v === 'ja') return v; return (navigator.language || '').toLowerCase().startsWith('ja') ? 'ja' : 'ko'; })();
+
+// ── 공통: 빙고 줄 계산 (3×3, 4×4, 5×5) ──
+const _lines = {};
+function linesFor(n) {
+  if (_lines[n]) return _lines[n];
+  const lines = [], names = [], R = [...Array(n).keys()];
+  R.forEach(r => { lines.push(R.map(c => r*n+c)); names.push(LANG === 'ja' ? `横 ${r+1}列目` : `가로 ${r+1}번째 줄`); });
+  R.forEach(c => { lines.push(R.map(r => r*n+c)); names.push(LANG === 'ja' ? `縦 ${c+1}列目` : `세로 ${c+1}번째 줄`); });
+  lines.push(R.map(i => i*(n+1)), R.map(i => (i+1)*(n-1)));
+  names.push(LANG === 'ja' ? '斜め ↘' : '대각선 ↘', LANG === 'ja' ? '斜め ↙' : '대각선 ↙');
+  return (_lines[n] = { lines, names });
+}
 const ORD = ['첫','두','세','네','다섯','여섯','일곱','여덟','아홉','열','열한','열두'];
-const ordLabel = n => `${ORD[n-1] || n} 번째 빙고`;
+const ordLabel = n => LANG === 'ja' ? `${n}つ目のビンゴ` : `${ORD[n-1] || n} 번째 빙고`;
 const LINE_COLORS = ['#f59e0b','#10b981','#ef4444','#8b5cf6','#06b6d4','#ec4899','#84cc16','#f97316','#6366f1','#14b8a6','#e11d48','#0ea5e9'];
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
@@ -480,7 +592,10 @@ function toast(msg) {
 // 완성된 줄을 완성된 순서대로 (그 줄의 마지막 체크 시각 기준)
 function bingoOrder(cells) {
   const t = c => (c && c.checkedAt && c.checkedAt.toMillis) ? c.checkedAt.toMillis() : 0;
-  return LINES.map((l, li) => ({ li, cells: l, done: l.every(i => cells[i] && cells[i].checked), at: Math.max(...l.map(i => t(cells[i]))) }))
+  const n = Math.round(Math.sqrt(cells.length));
+  if (n < 3 || n * n !== cells.length) return [];
+  const { lines, names } = linesFor(n);
+  return lines.map((l, li) => ({ li, name: names[li], cells: l, done: l.every(i => cells[i] && cells[i].checked), at: Math.max(...l.map(i => t(cells[i]))) }))
     .filter(x => x.done)
     .sort((a, b) => a.at - b.at || a.li - b.li)
     .map((x, k) => ({ ...x, n: k + 1, color: LINE_COLORS[k % LINE_COLORS.length] }));
@@ -491,19 +606,19 @@ function drawBingoLines(boardEl, order) {
   let svg = boardEl.querySelector('.bingo-svg');
   if (!svg) { svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', 'bingo-svg'); boardEl.appendChild(svg); }
   const cellsEl = boardEl.querySelectorAll('.cell');
-  if (cellsEl.length < 25 || !order.length) { svg.innerHTML = ''; return; }
+  if (cellsEl.length < 9 || !order.length) { svg.innerHTML = ''; return; }
   const br = boardEl.getBoundingClientRect();
   const ctr = i => { const r = cellsEl[i].getBoundingClientRect(); return [r.left - br.left + r.width/2, r.top - br.top + r.height/2, r.width]; };
   svg.setAttribute('viewBox', `0 0 ${br.width} ${br.height}`);
   let out = '';
   order.forEach(o => {
-    const [x1, y1, w] = ctr(o.cells[0]), [x2, y2] = ctr(o.cells[4]);
+    const [x1, y1, w] = ctr(o.cells[0]), [x2, y2] = ctr(o.cells[o.cells.length - 1]);
     const sw = Math.max(4, w * 0.07);
     out += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${o.color}" stroke-width="${sw}" stroke-linecap="round" opacity=".6"/>`;
   });
   // 번호는 줄 위에 따로 (줄 시작점에서 살짝 안쪽)
   order.forEach(o => {
-    const [x1, y1, w] = ctr(o.cells[0]), [x2, y2] = ctr(o.cells[4]);
+    const [x1, y1, w] = ctr(o.cells[0]), [x2, y2] = ctr(o.cells[o.cells.length - 1]);
     const k = 0.12, bx = x1 + (x2 - x1) * k, by = y1 + (y2 - y1) * k;
     const r = Math.max(9, w * 0.14);
     out += `<circle cx="${bx}" cy="${by}" r="${r}" fill="${o.color}" stroke="white" stroke-width="2.5"/>
@@ -515,7 +630,7 @@ function drawBingoLines(boardEl, order) {
 function renderBingoLog(el, order, rewards) {
   el.innerHTML = order.map(o => {
     const rw = (rewards || []).find(r => r.lines === o.n);
-    return `<span class="blog"><span class="num" style="background:${o.color}">${o.n}</span><b>${ordLabel(o.n)}</b>${LINE_NAMES[o.li]}${rw ? `<span class="rwt">${rw.final ? '최종 보상' : '보상'} ${esc(rw.text || '')}</span>` : ''}</span>`;
+    return `<span class="blog"><span class="num" style="background:${o.color}">${o.n}</span><b>${ordLabel(o.n)}</b>${esc(o.name)}${rw ? `<span class="rwt">${rw.final ? '최종 보상' : '보상'} ${esc(rw.text || '')}</span>` : ''}</span>`;
   }).join('');
 }
 
@@ -529,8 +644,8 @@ let celebTimer;
 function celebrate(o, rewards) {
   const rw = (rewards || []).find(r => r.lines === o.n);
   $('celebBox').classList.toggle('final', !!(rw && rw.final));
-  $('celebBig').textContent = (rw && rw.final) ? `최종 빙고!` : `${ordLabel(o.n)}!`;
-  $('celebLine').textContent = (rw && rw.final ? `${ordLabel(o.n)} · ` : '') + LINE_NAMES[o.li];
+  $('celebBig').textContent = (rw && rw.final) ? (LANG === 'ja' ? '最終ビンゴ！' : '최종 빙고!') : `${ordLabel(o.n)}!`;
+  $('celebLine').textContent = (rw && rw.final ? `${ordLabel(o.n)} · ` : '') + o.name;
   $('celebText').textContent = rw ? `보상: ${rw.text || ''}` : '';
   $('celebModal').classList.remove('hidden');
   clearTimeout(celebTimer); celebTimer = setTimeout(() => $('celebModal').classList.add('hidden'), 4000);
@@ -550,7 +665,7 @@ function tagVars(t) {
   const i = tagIndex(t);
   const h = Math.round((i * 137.508 + 12) % 360);   // 황금각: 몇 개가 되든 이웃 색과 최대한 멀어짐
   const tone = [[88, 91, 30], [70, 86, 28], [95, 94, 32]][Math.floor(i / 8) % 3]; // 8개마다 명도도 바꿔서 더 구분
-  return `--tb:hsl(${h} ${tone[0]}% ${tone[1]}%);--tf:hsl(${h} 55% ${tone[2]}%);--tl:hsl(${h} 60% 74%)`;
+  return `--tb:hsl(${h} ${tone[0]}% ${tone[1]}%);--tf:hsl(${h} 55% ${tone[2]}%);--tl:hsl(${h} 60% 74%);--tbd:hsl(${h} 38% ${[25, 21, 29][Math.floor(i / 8) % 3]}%);--tfd:hsl(${h} 85% 84%);--tld:hsl(${h} 40% 42%)`;
 }
 const tagChip = t => `<span class="tchip" style="${tagVars(t)}">${esc(t)}</span>`;
 
@@ -587,6 +702,172 @@ function fbErr(e) {
 }
 window.addEventListener('unhandledrejection', ev => { console.error(ev.reason); toast(fbErr(ev.reason)); });
 
+// ── 최근 부른 곡 (맨 위 고정, 최신 곡이 왼쪽) ──
+let _nowLatest = null;
+function renderNowBar(songs, extra) {
+  const list = sungList(songs);
+  const bar = $('nowBar'); if (!bar) return;
+  if (!list.length) { bar.hidden = true; _nowLatest = null; return; }
+  bar.hidden = false;
+  const recent = list.map((s, i) => ({ s, no: i + 1 })).reverse().slice(0, 15);
+  const latest = recent[0].s.id, isNew = _nowLatest !== null && _nowLatest !== latest;
+  _nowLatest = latest;
+  $('nowList').innerHTML = recent.map(({ s, no }, k) => `<span class="now-chip${k === 0 ? ' latest' : ''}${k === 0 && isNew ? ' pop' : ''}">
+    <span class="nno">${no}</span><span class="nt">${esc(s.title)}</span>${s.artist ? `<span class="na">${esc(s.artist)}</span>` : ''}${extra ? extra(s) : ''}</span>`).join('');
+  $('nowList').scrollLeft = 0;
+}
+
+// ── 다크 모드 / 언어 버튼 ──
+function setupHeaderButtons() {
+  const tb = $('themeBtn'), lb = $('langBtn');
+  const paint = () => { const d = document.documentElement.dataset.theme === 'dark'; tb.textContent = d ? '☀️' : '🌙'; tb.title = d ? '라이트 모드' : '다크 모드'; };
+  if (tb) { paint(); tb.onclick = () => { const d = document.documentElement.dataset.theme !== 'dark'; document.documentElement.dataset.theme = d ? 'dark' : 'light'; store.set('msbingo-theme', d ? 'dark' : 'light'); paint(); if (typeof onThemeChange === 'function') onThemeChange(); }; }
+  if (lb) { lb.textContent = LANG === 'ja' ? '한국어' : '日本語'; lb.onclick = () => { store.set('msbingo-lang', LANG === 'ja' ? 'ko' : 'ja'); location.reload(); }; }
+}
+setupHeaderButtons();
+// 헤더 높이(최근 곡 바 포함)에 맞춰 노래 목록 고정 위치 조정
+(() => { const h = document.querySelector('header'); if (!h) return; const set = () => document.documentElement.style.setProperty('--hdr', h.offsetHeight + 'px'); set(); if (window.ResizeObserver) new ResizeObserver(set).observe(h); })();
+
+// ── 일본어 번역 (화면에 그려지는 한국어 글자를 바로바로 바꿔요) ──
+const JA = {
+  '노래': 'ソング', '빙고': 'ビンゴ', '관리자': '管理者', '내 닉네임': 'ニックネーム', '닉네임을 적어 주세요': 'ニックネームを入力',
+  '저장': '保存', '불러오는 중': '読み込み中', '불러오는 중...': '読み込み中...', '내 빙고': 'マイビンゴ', '줄': '列', '참여': '参加', '명': '人',
+  '노래 목록에서 곡을 끌어 조건에 맞는 칸에 넣어 주세요. 넣은 곡은 끌어서 다른 칸으로 옮기거나, ×를 눌러 뺄 수 있어요.': '曲リストから曲をドラッグして、お題に合うマスに入れてください。入れた曲はドラッグで別のマスに移動したり、×で外したりできます。',
+  '사진으로 저장': '画像で保存', '내 빙고판 비우기': 'カードを空にする', '노래 목록': '曲リスト',
+  '곡을 끌어서 칸에 놓거나, 곡을 누른 뒤 칸을 눌러 주세요.': '曲をマスにドラッグするか、曲をタップしてからマスをタップしてください。',
+  '제목, 가수 검색': 'タイトル・アーティストで検索', '부른 순서': '歌った順', '최근 부른 곡': '最近歌った曲', '확인': 'OK', '취소': 'キャンセル', '닫기': '閉じる',
+  '내 빙고판 사진': 'マイビンゴカードの画像', '휴대폰에서는 사진을 길게 눌러 저장할 수도 있어요.': 'スマホでは画像を長押しして保存することもできます。', '사진 저장': '画像を保存',
+  '빙고 방 주소를 적어 주세요': 'ビンゴルームのIDを入力してください', '방송에서 받은 링크로 들어오면 바로 열려요.': '配信で共有されたリンクから入るとすぐに開きます。',
+  '예: mingsoon': '例: mingsoon', '들어가기': '入る', '예: 밍쑨': '例: みんすん',
+  '닉네임을 적어야 빙고판을 채울 수 있어요.': 'ニックネームを入力するとカードを埋められます。', '닉네임을 적어 주세요.': 'ニックネームを入力してください。',
+  '닉네임을 저장하지 못했어요.': 'ニックネームを保存できませんでした。', '지금은 빙고판이 잠겨 있어요.': '今はビンゴカードがロックされています。',
+  '닉네임을 먼저 적고 저장해 주세요.': '先にニックネームを入力して保存してください。', '저장하지 못했어요.': '保存できませんでした。',
+  '이미 부른 곡은 넣을 수 없어요.': 'すでに歌った曲は入れられません。', '이미 부른 칸은 바꿀 수 없어요.': 'すでに歌ったマスは変更できません。',
+  '부른 곡이 있는 칸은 옮길 수 없어요.': '歌った曲があるマスは移動できません。', '부른 곡은 뺄 수 없어요.': '歌った曲は外せません。', '뺄 곡이 없어요.': '外す曲がありません。',
+  '아직 부르지 않은 곡을 전부 뺄까요? 부른 곡은 그대로 남아요.': 'まだ歌っていない曲をすべて外しますか？歌った曲はそのまま残ります。', '비우기': '空にする',
+  '준비 중': '準備中', '빙고판 채우는 중': 'カード作成中', '🔒 잠김': '🔒 ロック中', '빙고판을 준비하고 있어요.': 'ビンゴカードを準備中です。',
+  '부른 곡': '歌った曲', '내 빙고판': 'マイカード', '아직 등록된 곡이 없어요.': 'まだ曲が登録されていません。', '검색 결과가 없어요.': '検索結果がありません。', '전체': 'すべて',
+  '내 빙고판에 없음': 'マイカードにない', '아직 부른 곡이 없어요.': 'まだ歌った曲がありません。', '보상': '特典', '최종 빙고!': '最終ビンゴ！',
+  '옮길 칸을 누르거나, ×로 뺄 수 있어요.': '移動先のマスをタップするか、×で外せます。', '이미 부른 곡이에요.': 'すでに歌った曲です。',
+  '이미 내 빙고판에 있는 곡이에요.': 'すでにマイカードにある曲です。', '닉네임을 먼저 적어 주세요. 사진에 같이 들어가요.': '先にニックネームを入力してください。画像に一緒に入ります。',
+  '내 빙고판을 불러오지 못했어요.': 'マイカードを読み込めませんでした。', '빙고판 상태를 불러오지 못했어요.': 'ビンゴの状態を読み込めませんでした。',
+  '없는 방이에요. 방 주소를 다시 확인해 주세요.': '存在しないルームです。ルームIDをもう一度確認してください。',
+  '권한이 없어요. 빙고판이 잠겨 있거나 Firestore 규칙이 최신이 아니에요.': '権限がありません。カードがロックされているか、Firestoreのルールが最新ではありません。',
+  '권한이 없어요.': '権限がありません。', '빙고판이 잠겨 있거나 Firestore 규칙이 최신이 아니에요.': 'カードがロックされているか、Firestoreのルールが最新ではありません。',
+  '인터넷 연결을 확인해 주세요.': 'インターネット接続を確認してください。', '이름 없음': '名前なし', '빼기': '外す', '라이트 모드': 'ライトモード', '다크 모드': 'ダークモード',
+  '시청자 화면': '視聴者画面', '로그아웃': 'ログアウト', '관리자 로그인': '管理者ログイン', '받은 관리자 계정으로 로그인해 주세요.': '発行された管理者アカウントでログインしてください。',
+  '이메일': 'メールアドレス', '비밀번호': 'パスワード', '로그인': 'ログイン', '이메일 또는 비밀번호가 틀렸습니다.': 'メールアドレスまたはパスワードが違います。',
+  '내 빙고 방 만들기': 'ビンゴルームを作る', '계정마다 방이 하나씩 생겨요. 조건, 노래 목록, 시청자 빙고판이 모두 방별로 따로 저장돼요.': 'アカウントごとにルームが1つ作られます。お題・曲リスト・視聴者のカードはすべてルームごとに保存されます。',
+  '방 이름': 'ルーム名', '화면 위에 “○○ 노래 빙고”로 보여요': '画面上部に「○○ ソング ビンゴ」と表示されます', '방 주소': 'ルームID',
+  '영문 소문자, 숫자, - 로 3~30자. 나중에 못 바꿔요': '半角英小文字・数字・- で3〜30文字。あとから変更できません',
+  '예전에 쓰던 빙고 데이터(조건, 노래 목록, 보상, 시청자 빙고판) 가져오기': '以前のビンゴデータ（お題・曲リスト・特典・視聴者カード）を引き継ぐ',
+  '방 만들기': 'ルームを作る', '만드는 중...': '作成中...', '🔒 잠김 · 누르면 열어요': '🔒 ロック中 · タップで解除', '🟢 열림 · 누르면 잠가요': '🟢 受付中 · タップでロック',
+  '시청자가 자기 빙고판을 채우고 고칠 수 있어요.': '視聴者が自分のカードを作成・編集できます。', '시청자 빙고판이 고정돼서 고칠 수 없어요.': '視聴者のカードは固定され、編集できません。',
+  '새 판 시작': '新しいゲーム', '각 칸에 시청자들이 어떤 곡을 몇 명이 넣었는지 보여요. 칸을 누르면 전체 목록이, 조건 글자를 누르면 조건 수정이 열려요 (Enter 저장, Tab 다음 칸).': '各マスに、視聴者がどの曲を何人入れたかが表示されます。マスをタップすると一覧が、お題の文字をタップするとお題の編集が開きます（Enterで保存、Tabで次のマス）。',
+  '빙고판 만들기': 'ビンゴカードを作る', '아직 빙고판이 없어요.': 'まだビンゴカードがありません。', '아직 없음': 'まだなし',
+  '노래를 부르면 여기서 “불렀어요”를 눌러 주세요. 모든 시청자 빙고판에서 그 곡이 체크돼요.': '曲を歌ったらここで「歌った」を押してください。すべての視聴者のカードでその曲にチェックが入ります。',
+  '불렀어요': '歌った', '부름 취소': '取り消し', '수정': '編集', '아래 노래 추가에서 곡을 넣어 주세요.': '下の「曲を追加」から曲を登録してください。',
+  '↑↓로 순서를 바꾸고, ×로 기록에서 뺄 수 있어요. 순서가 바뀌면 시청자들의 “몇 번째 빙고”도 같이 바뀌어요.': '↑↓で順番を入れ替え、×で記録から外せます。順番が変わると視聴者の「何個目のビンゴ」も変わります。',
+  '넣은 사람 없음': '入れた人なし', '위로': '上へ', '아래로': '下へ', '기록에서 빼기': '記録から外す',
+  '아직 부른 곡이 없어요. 노래 목록에서 “불렀어요”를 누르면 여기에 쌓여요.': 'まだ歌った曲がありません。曲リストで「歌った」を押すとここに追加されます。',
+  '방 설정': 'ルーム設定', '시청자에게는 아래 링크를 공유해 주세요. 방마다 링크가 달라요.': '視聴者には下のリンクを共有してください。ルームごとにリンクが違います。',
+  '시청자 링크': '視聴者用リンク', '복사': 'コピー', '빙고판 크기': 'カードのサイズ', '로그인 계정': 'ログイン中',
+  '참여자 빙고판': '参加者のカード', '빙고 줄 수가 많은 순서예요. 보기를 누르면 그 사람 빙고판을 볼 수 있어요.': 'ビンゴ数が多い順です。「見る」でその人のカードを確認できます。',
+  '닉네임 검색': 'ニックネームで検索', '닉네임': 'ニックネーム', '채운 칸': '埋めたマス', '받을 보상': 'もらえる特典', '보기': '見る', '삭제': '削除',
+  '아직 참여한 사람이 없어요.': 'まだ参加者がいません。', '노래 추가': '曲を追加',
+  '제목과 가수를 적고 Enter를 누르면 바로 들어가요. 고른 태그는 다음 곡에도 그대로 남아서, 같은 장르를 연달아 넣기 편해요.': 'タイトルとアーティストを入力してEnterを押すとすぐ追加されます。選んだタグは次の曲にも残るので、同じジャンルを続けて入れるのに便利です。',
+  '제목': 'タイトル', '가수 (없어도 돼요)': 'アーティスト（省略可）', '가수': 'アーティスト', '추가': '追加', '태그': 'タグ', '선택 해제': '選択解除', '새 태그 만들기': '新しいタグ', '만들기': '作成',
+  '여러 곡 한 번에 붙여넣기': 'まとめて貼り付け', '한 줄에 한 곡씩,': '1行に1曲ずつ、', '제목 가수 태그': 'タイトル・アーティスト・タグ',
+  '순서로 적어 주세요. 칸은 탭(엑셀·구글 시트 복사), 하이픈(-), 쉼표, 슬래시 중 편한 걸로 나누면 되고 태그는 여러 개 써도 돼요. 태그 앞에 #을 붙이면 어디에 써도 태그로 알아봐요. 목록에 없는 태그는 새로 만들어지고, 위에서 골라 둔 태그도 같이 붙어요.': 'の順に入力してください。区切りはタブ（Excel・Googleスプレッドシートからコピー）、ハイフン(-)、カンマ、スラッシュのどれでもOKで、タグは複数書けます。タグの前に#を付けるとどこに書いてもタグとして認識します。リストにないタグは新しく作られ、上で選んだタグも一緒に付きます。',
+  '모두 추가': 'すべて追加', '없음': 'なし', '이미 있음': '登録済み', '빙고 보상': 'ビンゴ特典',
+  '시청자마다 몇 번째 빙고에 어떤 보상을 받는지 적어 주세요. 최종에 체크한 보상은 크게 강조돼요.': '視聴者が何個目のビンゴでどんな特典をもらえるか入力してください。「最終」にチェックした特典は大きく表示されます。',
+  '번째': 'つ目', '보상 내용': '特典の内容', '최종': '最終', '+ 보상 추가': '+ 特典を追加', '보상 저장': '特典を保存', '몇 번째 빙고': '何個目のビンゴ',
+  '곡 수정': '曲を編集', '곡 삭제': '曲を削除', '빙고판 삭제': 'カードを削除', '지웠어요.': '削除しました。', '되돌릴 수 없어요.': '元に戻せません。',
+  '아직 아무도 이 칸에 곡을 넣지 않았어요.': 'まだ誰もこのマスに曲を入れていません。', '방 정보를 불러오지 못했어요.': 'ルーム情報を読み込めませんでした。',
+  '방 이름을 적어 주세요.': 'ルーム名を入力してください。', '방 주소는 영문 소문자, 숫자, - 로 3~30자예요.': 'ルームIDは半角英小文字・数字・- で3〜30文字です。',
+  '이미 쓰고 있는 방 주소예요. 다른 주소를 적어 주세요.': 'すでに使われているルームIDです。別のIDを入力してください。', '방을 만들었어요.': 'ルームを作りました。',
+  '방을 만들지 못했어요.': 'ルームを作れませんでした。', '시청자 링크를 복사했어요.': '視聴者用リンクをコピーしました。', '링크를 선택했어요. Ctrl+C로 복사해 주세요.': 'リンクを選択しました。Ctrl+Cでコピーしてください。',
+  '방 이름을 바꿨어요.': 'ルーム名を変更しました。', '넣은 사람은 없어요.': '入れた人はいません。', '을(를) 부른 순서에서 뺄까요?': 'を歌った順から外しますか？',
+  '안 부른 곡으로 돌아가고, 시청자 빙고판의 체크도 풀려요.': '未歌唱に戻り、視聴者カードのチェックも外れます。', '님의 빙고판을 지울까요? 되돌릴 수 없어요.': 'さんのカードを削除しますか？元に戻せません。',
+  '빙고판을 잠갔어요. 시청자는 더 이상 고칠 수 없어요.': 'カードをロックしました。視聴者は編集できなくなります。', '빙고판을 열었어요. 시청자가 자기 빙고판을 채울 수 있어요.': 'カードを開放しました。視聴者が自分のカードを作れます。',
+  '잠금을 바꾸지 못했어요.': 'ロックを切り替えられませんでした。', '이미 목록에 있는 곡이에요.': 'すでにリストにある曲です。', '추가할 곡이 없어요.': '追加する曲がありません。',
+  '제목을 적어 주세요.': 'タイトルを入力してください。', '곡을 수정했어요.': '曲を編集しました。', '을(를) 목록에서 지울까요?': 'をリストから削除しますか？',
+  '보상을 저장했어요.': '特典を保存しました。', '빙고판을 만들었어요.': 'ビンゴカードを作りました。', '새 판을 시작했어요. 빙고판은 잠겨 있어요.': '新しいゲームを始めました。カードはロック中です。',
+  '설정을 불러오지 못했어요.': '設定を読み込めませんでした。', '시청자 빙고판을 불러오지 못했어요.': '視聴者のカードを読み込めませんでした。', '아직 태그가 없어요. 아래에서 새 태그를 만들어 주세요.': 'まだタグがありません。下で新しいタグを作ってください。',
+  '크기를 바꾸면 이미 채운 시청자 빙고판의 칸 배치가 달라져요. 새 판을 시작하기 전에 바꾸는 걸 추천해요.': 'サイズを変えると、すでに埋めた視聴者カードの配置が変わります。新しいゲームを始める前に変更するのがおすすめです。',
+  '빙고판 크기를 바꿨어요.': 'カードのサイズを変更しました。', '크기 바꾸기': 'サイズ変更', '칸': 'マス', '빙고판': 'ビンゴカード', '여기에 놓으면 빙고판에서 빠져요': 'ここに置くとカードから外れます', '다크 모드로 보기': 'ダークモード',
+};
+const JA_RULES = [
+  [/^관리자 · (v\d+)$/, (_, v) => `管理者 · ${v}`],
+  [/^(.*) 노래 빙고( — 관리자)?$/, (_, n, a) => `${n} ソングビンゴ${a ? ' — 管理者' : ''}`],
+  [/^노래 빙고( — 관리자)?$/, (_, a) => `ソングビンゴ${a ? ' — 管理者' : ''}`],
+  [/^(\d+)곡$/, (_, n) => `${n}曲`], [/^(\d+)명$/, (_, n) => `${n}人`], [/^(\d+)줄$/, (_, n) => `${n}列`],
+  [/^(\d+)개 선택$/, (_, n) => `${n}個選択中`],
+  [/^(\d+)곡 · (\d+)명$/, (_, a, b) => `${a}曲 · ${b}人`],
+  [/^(\d+)명 빙고판에 있음$/, (_, n) => `${n}人のカードにあり`],
+  [/^(\d+)명이 (\d+)곡을 넣었어요\.$/, (_, a, b) => `${a}人が${b}曲を入れました。`],
+  [/^(\d+)번 칸 · (.*)$/, (_, n, c) => `${n}番マス · ${c}`],
+  [/^(.*)님 빙고판 · (\d+)줄$/, (_, n, c) => `${n}さんのカード · ${c}列`],
+  [/^내 빙고판 (.*) 칸$/, (_, c) => `マイカード「${c}」`],
+  [/^(.*)님, 반가워요!$/, (_, n) => `${n}さん、ようこそ！`],
+  [/^최종 · (.*)$/, (_, a) => `最終 · ${a}`],
+  [/^최종 보상 (.*)$/, (_, a) => `最終特典 ${a}`], [/^보상 (.*)$/, (_, a) => `特典 ${a}`], [/^보상: (.*)$/, (_, a) => `特典: ${a}`],
+  [/^연결 오류: (.*)$/, (_, a) => `接続エラー: ${trJa(a)}`], [/^오류: (.*)$/, (_, a) => `エラー: ${a}`],
+  [/^(.*) · 새 태그$/, (_, t) => `${t} · 新しいタグ`],
+  [/^(\d+)곡 추가$/, (_, n) => `${n}曲を追加`],
+  [/^(.*) 체크! (.*)$/, (_, t, r) => `${t} チェック！${trJa(r)}`],
+  [/^(\d+)명 빙고판에 반영돼요\.$/, (_, n) => `${n}人のカードに反映されます。`],
+  [/^(.*) 부름을 취소했어요\.$/, (_, t) => `${t} の歌唱を取り消しました。`],
+  [/^(\d+)명 빙고판에 들어가 있어서, 그 칸은 비어 보이게 돼요\.$/, (_, n) => `${n}人のカードに入っているため、そのマスは空欄になります。`],
+  [/^시청자 빙고판 (\d+)개와 부른 곡 기록을 모두 지워요\. 조건과 노래 목록은 남아요\.$/, (_, n) => `視聴者のカード${n}枚と歌った曲の記録をすべて削除します。お題と曲リストは残ります。`],
+  [/^방을 만들고 노래 (\d+)곡(?:, 시청자 빙고판 (\d+)개)?를 가져왔어요\.$/, (_, a, b) => `ルームを作り、曲${a}曲${b ? `・視聴者カード${b}枚` : ''}を引き継ぎました。`],
+  [/^(\d+)×(\d+) 빙고판으로 바꿨어요\.$/, (_, a, b) => `${a}×${b}のカードに変更しました。`],
+];
+// 여러 조각으로 된 문장 (예: "3곡 추가 예정, 이미 있는 1곡은 건너뜀, 새 태그 2개")
+const JA_PARTS = [
+  [/^(\d+)곡 추가 예정$/, (_, n) => `${n}曲を追加予定`], [/^이미 있는 (\d+)곡은 건너뜀$/, (_, n) => `登録済みの${n}曲はスキップ`],
+  [/^새 태그 (\d+)개$/, (_, n) => `新しいタグ${n}個`], [/^(\d+)곡 추가$/, (_, n) => `${n}曲を追加`], [/^새 태그 (.+)$/, (_, t) => `新しいタグ ${t}`],
+];
+function trJa(s) {
+  if (!s || !/[가-힣]/.test(s)) return s;
+  const m = s.match(/^(\s*)([\s\S]*?)(\s*)$/), core = m[2];
+  const wrap = x => m[1] + x + m[3];
+  if (Object.prototype.hasOwnProperty.call(JA, core)) return wrap(JA[core]);
+  for (const [re, fn] of JA_RULES) { const r = core.match(re); if (r) return wrap(fn(...r)); }
+  if (/^\d+곡 추가/.test(core)) {
+    const parts = core.split(', ');
+    if (parts.every(p => JA_PARTS.some(([re]) => re.test(p)))) return wrap(parts.map(p => { for (const [re, fn] of JA_PARTS) { const r = p.match(re); if (r) return fn(...r); } return p; }).join('、'));
+  }
+  // 문장이 여러 개 이어진 경우 문장별로
+  const sents = core.split(/(?<=[.!?])\s+/);
+  if (sents.length > 1) { const out = sents.map(x => trJa(x)); if (out.some((x, i) => x !== sents[i])) return wrap(out.join('')); }
+  return s;
+}
+const tr = s => LANG === 'ja' ? trJa(s) : s;
+function trNode(node) {
+  if (node.nodeType === 3) {
+    const p = node.parentNode; if (!p || /^(SCRIPT|STYLE|TEXTAREA)$/.test(p.nodeName)) return;
+    const v = node.nodeValue; if (!/[가-힣]/.test(v)) return;
+    const t = trJa(v); if (t !== v) node.nodeValue = t;
+    return;
+  }
+  if (node.nodeType !== 1 || /^(SCRIPT|STYLE)$/.test(node.nodeName)) return;
+  for (const a of ['placeholder', 'aria-label', 'title']) {
+    const v = node.getAttribute && node.getAttribute(a);
+    if (v && /[가-힣]/.test(v)) { const t = trJa(v); if (t !== v) node.setAttribute(a, t); }
+  }
+  if (node.nodeName !== 'TEXTAREA') node.childNodes.forEach(trNode);
+}
+if (LANG === 'ja') {
+  document.documentElement.lang = 'ja';
+  trNode(document.body);
+  new MutationObserver(ms => ms.forEach(m => {
+    if (m.type === 'characterData') trNode(m.target);
+    else if (m.type === 'attributes') trNode(m.target);
+    else m.addedNodes.forEach(trNode);
+  })).observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['placeholder', 'aria-label', 'title'] });
+}
+
 
 const DEFAULT_CONDS = [
   'J-POP','발라드','애니송','여자 아이돌','남자 아이돌',
@@ -595,12 +876,24 @@ const DEFAULT_CONDS = [
   '보컬로이드','영어 노래','이별 노래','사랑 노래','고음 도전',
   '인디','힙합 · R&B','계절 노래','듀엣곡 혼자 부르기','추억의 노래'
 ];
+const DEFAULT_CONDS_JA = [
+  'J-POP','バラード','アニソン','女性アイドル','男性アイドル',
+  '2010年代','最近の曲','よく歌う曲','リスナーおすすめ','2000年代',
+  '90年代以前','OST','自由選曲','バンド曲','ダンス曲',
+  'ボカロ','英語の歌','失恋ソング','ラブソング','高音チャレンジ',
+  'インディーズ','ヒップホップ・R&B','季節の歌','デュエット曲をソロで','思い出の歌'
+];
+const DEFAULT_REWARDS_JA = [
+  { lines: 1, text: '小さな特典', final: false },
+  { lines: 2, text: '小さな特典', final: false },
+  { lines: 3, text: '大きな特典', final: true }
+];
 const DEFAULT_REWARDS = [
   { lines: 1, text: '작은 보상', final: false },
   { lines: 2, text: '작은 보상', final: false },
   { lines: 3, text: '큰 보상', final: true }
 ];
-const metaRef = doc(db, 'bingoMeta', 'config');
+let metaRef = null;   // 내 방 문서 (rooms/{방 주소})
 
 function ask(title, text, okLabel = '확인') {
   return new Promise(res => {
@@ -623,16 +916,96 @@ $('logoutBtn').onclick = () => signOut(auth);
 let started = false;
 onAuthStateChanged(auth, user => {
   $('loginBox').style.display = user ? 'none' : 'block';
-  $('adminWrap').style.display = user ? 'block' : 'none';
+  if (!user) { $('adminWrap').style.display = 'none'; $('roomBox').style.display = 'none'; }
   $('logoutBtn').style.display = user ? 'inline-block' : 'none';
-  if (user && !started) { started = true; subscribe(); }
+  if (user && !started) { started = true; findRoom(user); }
 });
 
+
+if (LANG === 'ja') $('bulkSongs').placeholder = 'アイドル - YOASOBI - J-POP, アニソン\nLemon, 米津玄師, J-POP\n怪獣の花唄 - Vaundy #最近の曲 #バンド曲\n夜に駆ける（Excelからコピーするとタイトル・アーティスト・タグの列がタブで区切られます）';
+// ── 내 방 찾기 / 만들기 ──
+const viewerUrl = () => new URL('index.html?room=' + encodeURIComponent(S.room), location.href).href;
+async function findRoom(user) {
+  try {
+    const snap = await getDocs(query(collection(db, 'rooms'), where('owner', '==', user.uid), limit(1)));
+    if (!snap.empty) { enterRoom(snap.docs[0].id); return; }
+  } catch (e) { console.error(e); toast('방 정보를 불러오지 못했어요. ' + fbErr(e)); return; }
+  $('roomBox').style.display = 'block';
+  try {
+    const legacy = await getDocs(query(collection(db, 'bingoCells'), limit(1)));
+    $('importWrap').style.display = legacy.empty ? 'none' : 'flex';
+  } catch { $('importWrap').style.display = 'none'; }
+}
+function enterRoom(id) {
+  S.room = id; metaRef = doc(db, 'rooms', id);
+  $('roomBox').style.display = 'none'; $('adminWrap').style.display = 'block';
+  $('viewerLink').href = viewerUrl(); $('shareUrl').value = viewerUrl(); $('roomSlugShow').textContent = id;
+  $('myEmail').textContent = (auth.currentUser && auth.currentUser.email) || '';
+  subscribe();
+}
+$('roomSlug').addEventListener('input', () => {
+  const v = $('roomSlug').value.trim().toLowerCase();
+  $('slugPrev').textContent = v ? new URL('index.html?room=' + v, location.href).href : '';
+});
+async function runOps(ops) { for (let k = 0; k < ops.length; k += 400) { const bt = writeBatch(db); ops.slice(k, k + 400).forEach(f => f(bt)); await bt.commit(); } }
+function defaultCellOps(slug) { return (LANG === 'ja' ? DEFAULT_CONDS_JA : DEFAULT_CONDS).map((c, i) => bt => bt.set(doc(db, 'rooms', slug, 'cells', 'c' + String(i).padStart(2, '0')), { idx: i, cond: c })); }
+async function importLegacy(slug) {
+  const ops = [];
+  const cells = await getDocs(collection(db, 'bingoCells'));
+  if (cells.size >= 25) cells.forEach(d => { const v = d.data(); ops.push(bt => bt.set(doc(db, 'rooms', slug, 'cells', d.id), { idx: v.idx, cond: v.cond })); });
+  else ops.push(...defaultCellOps(slug));
+  const songs = await getDocs(collection(db, 'bingoSongs'));
+  songs.forEach(d => { const v = d.data(); ops.push(bt => bt.set(doc(db, 'rooms', slug, 'songs', d.id), { title: v.title || '', artist: v.artist || '', tags: v.tags || [], used: !!v.used, sungAt: v.sungAt || null, createdAt: v.createdAt || serverTimestamp() })); });
+  try { const m = await getDoc(doc(db, 'bingoMeta', 'config')); if (m.exists() && Array.isArray(m.data().rewards)) { const rw = m.data().rewards; ops.push(bt => bt.set(doc(db, 'rooms', slug), { rewards: rw }, { merge: true })); } } catch {}
+  let boards = 0;
+  try {
+    const bs = await getDocs(collection(db, 'bingoBoards'));
+    bs.forEach(d => { const v = d.data(); if (Array.isArray(v.cells) && v.cells.length === 25) { boards++; ops.push(bt => bt.set(doc(db, 'rooms', slug, 'boards', d.id), { nick: v.nick || '이름 없음', cells: v.cells, updatedAt: v.updatedAt || serverTimestamp() })); } });
+  } catch (e) { console.warn('예전 시청자 빙고판은 가져오지 못했어요', e); }
+  await runOps(ops);
+  return { songs: songs.size, boards };
+}
+$('roomCreate').onclick = async () => {
+  const slug = $('roomSlug').value.trim().toLowerCase(), name = $('roomNameIn').value.trim();
+  if (!name) { toast('방 이름을 적어 주세요.'); $('roomNameIn').focus(); return; }
+  if (!/^[a-z0-9-]{3,30}$/.test(slug)) { toast('방 주소는 영문 소문자, 숫자, - 로 3~30자예요.'); $('roomSlug').focus(); return; }
+  const btn = $('roomCreate'); btn.disabled = true; btn.textContent = '만드는 중...';
+  try {
+    const ref = doc(db, 'rooms', slug);
+    if ((await getDoc(ref)).exists()) { toast('이미 쓰고 있는 방 주소예요. 다른 주소를 적어 주세요.'); return; }
+    await setDoc(ref, { owner: auth.currentUser.uid, name, locked: true, rewards: LANG === 'ja' ? DEFAULT_REWARDS_JA : DEFAULT_REWARDS, createdAt: serverTimestamp() });
+    if ($('importWrap').style.display !== 'none' && $('importLegacy').checked) {
+      const r = await importLegacy(slug);
+      toast(`방을 만들고 노래 ${r.songs}곡${r.boards ? `, 시청자 빙고판 ${r.boards}개` : ''}를 가져왔어요.`);
+    } else { await runOps(defaultCellOps(slug)); toast('방을 만들었어요.'); }
+    enterRoom(slug);
+  } catch (e) { console.error(e); toast('방을 만들지 못했어요. ' + fbErr(e)); }
+  finally { btn.disabled = false; btn.textContent = '방 만들기'; }
+};
+$('copyUrl').onclick = async () => {
+  try { await navigator.clipboard.writeText($('shareUrl').value); toast('시청자 링크를 복사했어요.'); }
+  catch { $('shareUrl').select(); toast('링크를 선택했어요. Ctrl+C로 복사해 주세요.'); }
+};
+$('sizeSeg').addEventListener('click', async e => {
+  const btn = e.target.closest('[data-size]'); if (!btn) return;
+  const n = +btn.dataset.size; if (n === gridN()) return;
+  if (S.boards.some(b => (b.cells || []).some(Boolean)) && !await ask('크기 바꾸기', '크기를 바꾸면 이미 채운 시청자 빙고판의 칸 배치가 달라져요. 새 판을 시작하기 전에 바꾸는 걸 추천해요.', '크기 바꾸기')) return;
+  await setDoc(metaRef, { size: n }, { merge: true });
+  toast(`${n}×${n} 빙고판으로 바꿨어요.`);
+});
+$('roomNameSave').onclick = async () => {
+  const v = $('roomNameEdit').value.trim(); if (!v) return toast('방 이름을 적어 주세요.');
+  await setDoc(metaRef, { name: v }, { merge: true }); toast('방 이름을 바꿨어요.');
+};
+
 // ── 상태 ──
-const S = { conds: [], songs: [], songMap: new Map(), boards: [], meta: null, q: '', tag: '전체', loaded: false,
+const S = { room: null, conds: [], songs: [], songMap: new Map(), boards: [], meta: null, q: '', tag: '전체', loaded: false,
   agg: [], cnt: new Map(), editingCond: null, openAgg: null, viewId: null, pFilter: '',
   editSong: null, pickTags: new Set(), extraTags: new Set(), editTags: new Set(), recent: [], rwDirty: false };
 const rewards = () => (S.meta && S.meta.rewards) || [];
+const gridN = () => { const n = S.meta && S.meta.size; return [3, 4, 5].includes(n) ? n : 5; };
+const NN = () => gridN() * gridN();
+const activeConds = () => S.conds.slice(0, NN());
 // 태그 목록은 노래 목록 기준 (목록 필터와 같은 순서) + 방금 만든 새 태그
 function songTags() {
   const set = new Set();
@@ -647,7 +1020,7 @@ function allTags() {
 function aggregate() {
   const agg = Array.from({ length: 25 }, () => new Map()), cnt = new Map();
   S.boards.forEach(b => (b.cells || []).forEach((id, i) => {
-    if (!id || i > 24 || !S.songMap.has(id)) return;
+    if (!id || i >= NN() || !S.songMap.has(id)) return;
     const e = agg[i].get(id) || { n: 0, nicks: [] }; e.n++; e.nicks.push(b.nick || '이름 없음'); agg[i].set(id, e);
     cnt.set(id, (cnt.get(id) || 0) + 1);
   }));
@@ -655,7 +1028,7 @@ function aggregate() {
 }
 function participants() {
   return S.boards.map(b => {
-    const cells = composeCells(S.conds, b.cells || [], S.songMap), order = bingoOrder(cells);
+    const cells = composeCells(activeConds(), b.cells || [], S.songMap), order = bingoOrder(cells);
     return { b, cells, order, n: order.length, fill: cells.filter(c => c.songId).length, rw: rewards().filter(r => r.lines <= order.length) };
   }).sort((x, y) => y.n - x.n || y.fill - x.fill || String(x.b.nick).localeCompare(String(y.b.nick), 'ko'));
 }
@@ -672,7 +1045,8 @@ function renderBoard() {
   const b = $('board');
   if (S.loaded && S.conds.length < 25) { b.innerHTML = '<div class="board-empty" style="grid-column:1/-1">아직 빙고판이 없어요.<br><button class="btn-blue" id="initBtn" style="margin-top:12px">빙고판 만들기</button></div>'; return; }
   if (S.conds.length < 25 || S.editingCond !== null) return;
-  b.innerHTML = S.conds.map((c, i) => {
+  b.style.setProperty('--n', gridN()); b.className = 'board n' + gridN();
+  b.innerHTML = activeConds().map((c, i) => {
     const entries = [...(S.agg[i] || new Map())].sort((a, b) => b[1].n - a[1].n);
     const total = entries.reduce((m, e) => m + e[1].n, 0);
     const top = entries.slice(0, 3).map(([id, e]) => { const s = S.songMap.get(id);
@@ -758,6 +1132,7 @@ function readRwEditor() {
 }
 function renderAll() {
   aggregate();
+  renderNowBar(S.songs, s => { const n = S.cnt.get(s.id) || 0; return n ? `<span class="nmine">${esc(tr(n + '명'))}</span>` : ''; });
   renderStatus(); renderBoard(); renderTags(); renderSongs(); renderTagPick(); renderSung(); renderParticipants();
   if (S.openAgg !== null) renderAgg();
   if (S.viewId) renderView();
@@ -766,7 +1141,7 @@ function renderAll() {
 // ── 불렀어요 (노래 목록에서만) ──
 async function setSung(songId, sung) {
   const s = S.songMap.get(songId); if (!s) return;
-  await updateDoc(doc(db, 'bingoSongs', songId), sung ? { used: true, sungAt: serverTimestamp() } : { used: false, sungAt: null });
+  await updateDoc(doc(db, 'rooms', S.room, 'songs', songId), sung ? { used: true, sungAt: serverTimestamp() } : { used: false, sungAt: null });
   const n = S.cnt.get(songId) || 0;
   toast(sung ? `${s.title} 체크! ${n ? `${n}명 빙고판에 반영돼요.` : '넣은 사람은 없어요.'}` : `${s.title} 부름을 취소했어요.`);
 }
@@ -797,7 +1172,7 @@ $('sungLog').addEventListener('click', async e => {
   }
   const next = list.slice(); [next[i], next[j]] = [next[j], next[i]];
   const b = writeBatch(db); let changed = 0;
-  next.forEach((s, k) => { if (tms(s.sungAt) !== times[k]) { b.update(doc(db, 'bingoSongs', s.id), { sungAt: Timestamp.fromMillis(times[k]) }); changed++; } });
+  next.forEach((s, k) => { if (tms(s.sungAt) !== times[k]) { b.update(doc(db, 'rooms', S.room, 'songs', s.id), { sungAt: Timestamp.fromMillis(times[k]) }); changed++; } });
   if (changed) await b.commit();
 });
 
@@ -836,7 +1211,7 @@ function startCondEdit(idx) {
     if (done) return; done = true;
     const v = inp.value.trim().replace(/\s+/g, ' ');
     S.editingCond = null;
-    if (save && v && v !== c.cond) { try { await updateDoc(doc(db, 'bingoCells', c.id), { cond: v }); } catch (err) { toast('저장하지 못했어요. ' + fbErr(err)); } }
+    if (save && v && v !== c.cond) { try { await updateDoc(doc(db, 'rooms', S.room, 'cells', c.id), { cond: v }); } catch (err) { toast('저장하지 못했어요. ' + fbErr(err)); } }
     renderBoard();
   };
   inp.addEventListener('pointerdown', e => e.stopPropagation());
@@ -845,7 +1220,7 @@ function startCondEdit(idx) {
     if (e.isComposing) return;
     if (e.key === 'Enter') { e.preventDefault(); finish(true); }
     else if (e.key === 'Escape') { e.preventDefault(); finish(false); }
-    else if (e.key === 'Tab') { e.preventDefault(); const next = (idx + (e.shiftKey ? 24 : 1)) % 25; finish(true).then(() => startCondEdit(next)); }
+    else if (e.key === 'Tab') { e.preventDefault(); const nn = NN(), next = (idx + (e.shiftKey ? nn - 1 : 1)) % nn; finish(true).then(() => startCondEdit(next)); }
   });
   inp.addEventListener('blur', () => finish(true));
 }
@@ -858,15 +1233,15 @@ $('pList').addEventListener('click', async e => {
   const d = e.target.closest('[data-pdel]');
   if (d) {
     const b = S.boards.find(x => x.id === d.dataset.pdel); if (!b) return;
-    if (await ask('빙고판 삭제', `<b>${esc(b.nick || '이름 없음')}</b>님의 빙고판을 지울까요? 되돌릴 수 없어요.`, '삭제')) { await deleteDoc(doc(db, 'bingoBoards', b.id)); toast('지웠어요.'); }
+    if (await ask('빙고판 삭제', `<b>${esc(b.nick || '이름 없음')}</b>님의 빙고판을 지울까요? 되돌릴 수 없어요.`, '삭제')) { await deleteDoc(doc(db, 'rooms', S.room, 'boards', b.id)); toast('지웠어요.'); }
   }
 });
 function renderView() {
   const b = S.boards.find(x => x.id === S.viewId);
   if (!b) { $('viewClose').click(); return; }
-  const cells = composeCells(S.conds, b.cells || [], S.songMap), order = bingoOrder(cells);
+  const cells = composeCells(activeConds(), b.cells || [], S.songMap), order = bingoOrder(cells);
   $('viewTitle').textContent = `${b.nick || '이름 없음'}님 빙고판 · ${order.length}줄`;
-  const el = $('viewBoard');
+  const el = $('viewBoard'); el.style.setProperty('--n', gridN()); el.className = 'board n' + gridN();
   el.innerHTML = cells.map(c => `<div class="cell${c.songId?' placed':''}${c.checked?' checked':''}" style="cursor:default">
     <div class="cond">${esc(c.cond)}</div>${c.songId ? `<div class="song">${esc(c.song)}</div>${c.artist?`<div class="artist">${esc(c.artist)}</div>`:''}` : ''}<span class="stamp">✓</span></div>`).join('');
   renderBingoLog($('viewLog'), order, rewards());
@@ -894,7 +1269,7 @@ async function addOne() {
   if (!t) { $('nTitle').focus(); return; }
   if (existsSong(t, a)) { toast('이미 목록에 있는 곡이에요.'); return; }
   const b = writeBatch(db);
-  b.set(doc(collection(db, 'bingoSongs')), { title: t, artist: a, tags: [...S.pickTags], used: false, createdAt: serverTimestamp() });
+  b.set(doc(collection(db, 'rooms', S.room, 'songs')), { title: t, artist: a, tags: [...S.pickTags], used: false, createdAt: serverTimestamp() });
   $('nTitle').value = ''; $('nArtist').value = ''; $('nTitle').focus();
   pushRecent(t);
   await b.commit();
@@ -969,7 +1344,7 @@ $('addSongs').onclick = async () => {
   const list = rows.filter(r => !r.dup).slice(0, 450);
   if (!list.length) return toast('추가할 곡이 없어요.');
   const b = writeBatch(db);
-  list.forEach(r => b.set(doc(collection(db, 'bingoSongs')), { title: r.title, artist: r.artist, tags: r.tags, used: false, createdAt: serverTimestamp() }));
+  list.forEach(r => b.set(doc(collection(db, 'rooms', S.room, 'songs')), { title: r.title, artist: r.artist, tags: r.tags, used: false, createdAt: serverTimestamp() }));
   $('addSongs').disabled = true;
   await b.commit();
   newTags.forEach(t => S.extraTags.add(t));
@@ -993,14 +1368,14 @@ $('eCancel').onclick = () => { S.editSong = null; $('songModal').classList.add('
 $('eSave').onclick = async () => {
   const id = S.editSong, t = $('eTitle').value.trim(), a = $('eArtist').value.trim();
   if (!id || !t) return toast('제목을 적어 주세요.');
-  await updateDoc(doc(db, 'bingoSongs', id), { title: t, artist: a, tags: [...S.editTags] });
+  await updateDoc(doc(db, 'rooms', S.room, 'songs', id), { title: t, artist: a, tags: [...S.editTags] });
   $('eCancel').click(); toast('곡을 수정했어요.');
 };
 $('eDel').onclick = async () => {
   const id = S.editSong, s = S.songMap.get(id); if (!s) return;
   const n = S.cnt.get(id) || 0;
   $('songModal').classList.add('hidden');
-  if (await ask('곡 삭제', `<b>${esc(s.title)}</b>을(를) 목록에서 지울까요?${n ? `<br>${n}명 빙고판에 들어가 있어서, 그 칸은 비어 보이게 돼요.` : ''}`, '삭제')) { await deleteDoc(doc(db, 'bingoSongs', id)); toast('지웠어요.'); }
+  if (await ask('곡 삭제', `<b>${esc(s.title)}</b>을(를) 목록에서 지울까요?${n ? `<br>${n}명 빙고판에 들어가 있어서, 그 칸은 비어 보이게 돼요.` : ''}`, '삭제')) { await deleteDoc(doc(db, 'rooms', S.room, 'songs', id)); toast('지웠어요.'); }
   S.editSong = null;
 };
 
@@ -1023,17 +1398,13 @@ $('rwSave').onclick = async () => {
 
 // ── 빙고판 만들기 / 새 판 ──
 async function initBoard() {
-  const snap = await getDoc(metaRef);
-  const b = writeBatch(db);
-  if (!snap.exists()) b.set(metaRef, { locked: true, rewards: DEFAULT_REWARDS });
-  for (let i = 0; i < 25; i++) b.set(doc(db, 'bingoCells', 'c' + String(i).padStart(2, '0')), { idx: i, cond: DEFAULT_CONDS[i] });
-  await b.commit(); toast('빙고판을 만들었어요.');
+  await runOps(defaultCellOps(S.room)); toast('빙고판을 만들었어요.');
 }
 $('resetBtn').onclick = async () => {
   if (!await ask('새 판 시작', `시청자 빙고판 ${S.boards.length}개와 부른 곡 기록을 모두 지워요. 조건과 노래 목록은 남아요.<br>되돌릴 수 없어요.`, '새 판 시작')) return;
   const ops = [];
-  S.boards.forEach(b => ops.push(bt => bt.delete(doc(db, 'bingoBoards', b.id))));
-  S.songs.filter(s => s.used || s.sungAt).forEach(s => ops.push(bt => bt.update(doc(db, 'bingoSongs', s.id), { used: false, sungAt: null })));
+  S.boards.forEach(b => ops.push(bt => bt.delete(doc(db, 'rooms', S.room, 'boards', b.id))));
+  S.songs.filter(s => s.used || s.sungAt).forEach(s => ops.push(bt => bt.update(doc(db, 'rooms', S.room, 'songs', s.id), { used: false, sungAt: null })));
   ops.push(bt => bt.set(metaRef, { locked: true }, { merge: true }));
   for (let k = 0; k < ops.length; k += 400) { const bt = writeBatch(db); ops.slice(k, k + 400).forEach(f => f(bt)); await bt.commit(); }
   toast('새 판을 시작했어요. 빙고판은 잠겨 있어요.');
@@ -1041,19 +1412,19 @@ $('resetBtn').onclick = async () => {
 
 // ── 실시간 ──
 function subscribe() {
-  onSnapshot(collection(db, 'bingoCells'), snap => {
+  onSnapshot(collection(db, 'rooms', S.room, 'cells'), snap => {
     S.conds = snap.docs.map(d => ({ id: d.id, idx: d.data().idx, cond: d.data().cond })).sort((a,b) => a.idx - b.idx);
     S.loaded = true; renderAll();
   }, err => { $('board').innerHTML = `<div class="board-empty" style="grid-column:1/-1">연결 오류: ${esc(fbErr(err))}</div>`; });
 
-  onSnapshot(collection(db, 'bingoSongs'), snap => {
+  onSnapshot(collection(db, 'rooms', S.room, 'songs'), snap => {
     S.songs = snap.docs.map(d => ({ id: d.id, ...d.data({ serverTimestamps: 'estimate' }) }));
     S.songMap = new Map(S.songs.map(s => [s.id, s]));
     setTagOrder(S.songs);
     renderAll();
   });
 
-  onSnapshot(collection(db, 'bingoBoards'), snap => {
+  onSnapshot(collection(db, 'rooms', S.room, 'boards'), snap => {
     S.boards = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderAll();
   }, err => { console.error(err); toast('시청자 빙고판을 불러오지 못했어요. ' + fbErr(err)); });
@@ -1061,7 +1432,11 @@ function subscribe() {
   let first = true;
   onSnapshot(metaRef, snap => {
     S.meta = snap.exists() ? snap.data() : null;
-    if (first || !S.rwDirty) renderRwEditor((S.meta && S.meta.rewards) || DEFAULT_REWARDS);
+    const nm = (S.meta && S.meta.name) || '';
+    $('roomTitle').textContent = nm; document.title = tr(`${nm} 노래 빙고 — 관리자`);
+    document.querySelectorAll('#sizeSeg button').forEach(x => x.classList.toggle('on', +x.dataset.size === gridN()));
+    if (document.activeElement !== $('roomNameEdit')) $('roomNameEdit').value = nm;
+    if (first || !S.rwDirty) renderRwEditor((S.meta && S.meta.rewards) || (LANG === 'ja' ? DEFAULT_REWARDS_JA : DEFAULT_REWARDS));
     first = false;
     renderAll();
   }, err => { console.error(err); toast('설정을 불러오지 못했어요. ' + fbErr(err)); });
