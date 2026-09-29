@@ -9,7 +9,7 @@
 
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Pretendard',-apple-system,sans-serif;}
 :root{
-  --bg:#f8fafc;--card:#ffffff;--toast:#1f2937;--amber-bg:#fffbeb;--amber-fg:#92400e;
+  --on-acc:#ffffff;  --bg:#f8fafc;--card:#ffffff;--toast:#1f2937;--amber-bg:#fffbeb;--amber-fg:#92400e;
   --blue:#2563eb;--blue-lt:#dbeafe;--blue-md:#93c5fd;--blue-dk:#1d4ed8;--blue-xl:#eff6ff;
   --g50:#f9fafb;--g100:#f3f4f6;--g200:#e5e7eb;--g300:#d1d5db;
   --g400:#9ca3af;--g500:#6b7280;--g600:#4b5563;--g800:#1f2937;
@@ -23,7 +23,7 @@ header{background:var(--card);border-bottom:1px solid var(--g200);position:stick
 .hdr-r{display:flex;align-items:center;gap:6px;}
 .icon-btn{font-size:15px;padding:5px 9px;line-height:1.2;}
 .logo{font-size:18px;font-weight:600;letter-spacing:-.3px;}
-.logo em{color:var(--blue);font-style:normal;}
+.logo em{color:var(--blue-dk);font-style:normal;}
 .btn-sm{font-size:13px;padding:6px 14px;border:1px solid var(--g200);border-radius:8px;background:transparent;color:var(--g600);cursor:pointer;font-family:inherit;text-decoration:none;display:inline-block;}
 .btn-sm:hover{background:var(--g100);}
 main{max-width:1120px;margin:0 auto;padding:20px 16px 48px;}
@@ -46,7 +46,7 @@ main{max-width:1120px;margin:0 auto;padding:20px 16px 48px;}
 .rw{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--g200);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--g600);}
 .rw .n{font-weight:700;color:var(--g800);font-size:12px;background:var(--g100);border-radius:6px;padding:2px 7px;}
 .rw.hit{border-color:var(--blue-md);background:var(--blue-xl);color:var(--blue-dk);}
-.rw.hit .n{background:var(--blue);color:white;}
+.rw.hit .n{background:var(--blue);color:var(--on-acc);}
 .rw.final{border-color:var(--amber-md);background:var(--amber-bg);color:var(--amber-fg);font-weight:600;}
 .rw.final .n{background:var(--amber);color:white;}
 .rw.final.hit{background:var(--amber);border-color:var(--amber);color:white;}
@@ -65,10 +65,10 @@ main{max-width:1120px;margin:0 auto;padding:20px 16px 48px;}
 .cell .artist{font-size:11px;color:var(--g500);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .cell.placed{background:var(--card);border-color:var(--blue-md);}
 .cell.checked{background:var(--blue);border-color:var(--blue);}
-.cell.checked .cond{color:rgba(255,255,255,.75);}
-.cell.checked .song{color:white;}
-.cell.checked .artist{color:rgba(255,255,255,.75);}
-.cell .stamp{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:#fff;color:var(--blue);display:none;align-items:center;justify-content:center;font-size:13px;font-weight:800;}
+.cell.checked .cond{color:var(--on-acc);opacity:.75;}
+.cell.checked .song{color:var(--on-acc);}
+.cell.checked .artist{color:var(--on-acc);opacity:.75;}
+.cell .stamp{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:#fff;color:var(--blue-dk);display:none;align-items:center;justify-content:center;font-size:13px;font-weight:800;}
 .cell.checked .stamp{display:flex;}
 .cell.target{border-style:dashed;border-color:var(--blue);background:var(--blue-xl);}
 .cell.pickable{cursor:pointer;}
@@ -112,7 +112,7 @@ main{max-width:1120px;margin:0 auto;padding:20px 16px 48px;}
 .empty{font-size:13px;color:var(--g400);text-align:center;padding:24px 0;}
 
 /* 드래그 고스트 */
-.ghost{position:fixed;z-index:200;pointer-events:none;background:var(--blue);color:white;font-size:13px;font-weight:600;padding:8px 12px;border-radius:9px;box-shadow:0 8px 24px rgba(37,99,235,.35);transform:translate(-50%,-120%);white-space:nowrap;max-width:240px;overflow:hidden;text-overflow:ellipsis;}
+.ghost{position:fixed;z-index:200;pointer-events:none;background:var(--blue);color:var(--on-acc);font-size:13px;font-weight:600;padding:8px 12px;border-radius:9px;box-shadow:0 8px 24px rgba(37,99,235,.35);transform:translate(-50%,-120%);white-space:nowrap;max-width:240px;overflow:hidden;text-overflow:ellipsis;}
 
 /* 모달 */
 .overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px;}
@@ -124,12 +124,12 @@ main{max-width:1120px;margin:0 auto;padding:20px 16px 48px;}
 .mbtns{display:flex;gap:8px;margin-top:18px;}
 .mbtns button{flex:1;padding:10px;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit;font-weight:500;}
 .btn-cancel{background:var(--g100);border:1px solid var(--g200);color:var(--g600);}
-.btn-confirm{background:var(--blue);border:none;color:white;}
+.btn-confirm{background:var(--blue);border:none;color:var(--on-acc);}
 .btn-confirm:hover{background:var(--blue-dk);}
 
 /* 빙고 축하 */
 .celebrate{background:var(--card);border-radius:18px;padding:28px 24px;text-align:center;max-width:340px;width:100%;}
-.celebrate .big{font-size:40px;font-weight:900;color:var(--blue);letter-spacing:-1px;}
+.celebrate .big{font-size:40px;font-weight:900;color:var(--blue-dk);letter-spacing:-1px;}
 .celebrate.final .big{color:var(--amber);}
 .celebrate .rtext{margin-top:8px;font-size:15px;color:var(--g600);}
 
@@ -164,7 +164,7 @@ main{max-width:1120px;margin:0 auto;padding:20px 16px 48px;}
 .sung-wrap h2 span{font-size:13px;font-weight:500;color:var(--g400);}
 .sung-list{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px;margin-top:10px;}
 .sung{display:flex;align-items:center;gap:10px;border:1px solid var(--g200);border-radius:10px;padding:8px 10px;}
-.sung .sn{width:24px;height:24px;border-radius:50%;background:var(--blue);color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;}
+.sung .sn{width:24px;height:24px;border-radius:50%;background:var(--blue);color:var(--on-acc);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;}
 .sung .sbody{min-width:0;flex:1;}
 .sung .stitle{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .sung .sart{font-size:12px;font-weight:400;color:var(--g500);margin-left:6px;}
@@ -212,11 +212,11 @@ main{max-width:1120px;margin:0 auto;padding:20px 16px 48px;}
 .now-chip .nno{width:20px;height:20px;border-radius:50%;background:var(--g200);color:var(--g600);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;}
 .now-chip .nt{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto;}
 .now-chip .na{font-size:11px;color:var(--g500);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto;}
-.now-chip .nmine{font-size:11px;font-weight:700;color:var(--blue);white-space:nowrap;margin-left:auto;flex:none;}
-.now-chip.latest{background:var(--blue);border-color:var(--blue);color:#fff;}
-.now-chip.latest .nno{background:#fff;color:var(--blue);}
-.now-chip.latest .na{color:rgba(255,255,255,.8);}
-.now-chip.latest .nmine{color:#fff;}
+.now-chip .nmine{font-size:11px;font-weight:700;color:var(--blue-dk);white-space:nowrap;margin-left:auto;flex:none;}
+.now-chip.latest{background:var(--blue);border-color:var(--blue);color:var(--on-acc);}
+.now-chip.latest .nno{background:#fff;color:var(--blue-dk);}
+.now-chip.latest .na{color:var(--on-acc);opacity:.8;}
+.now-chip.latest .nmine{color:var(--on-acc);}
 .now-chip.pop{animation:nowpop .6s ease-out;}
 @keyframes nowpop{0%{transform:translateX(-24px);opacity:0;}60%{transform:translateX(3px);opacity:1;}100%{transform:none;}}
 @media(max-width:560px){.hdr-top{padding:10px 12px;}.nowbar{padding:6px 12px 8px;}.now-label{display:none;}.now-list{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}}
@@ -235,9 +235,9 @@ input,textarea,select{color:var(--g800);}
   color-scheme:dark;
 }
 [data-theme="dark"] [style*="--tbd"]{--tb:var(--tbd)!important;--tf:var(--tfd)!important;--tl:var(--tld)!important;}
-[data-theme="dark"] .tag.on:not([style]){background:var(--blue);border-color:var(--blue);color:#fff;}
+[data-theme="dark"] .tag.on:not([style]){background:var(--blue);border-color:var(--blue);color:var(--on-acc);}
 [data-theme="dark"] .overlay{background:rgba(0,0,0,.6);}
-[data-theme="dark"] .cell.checked{background:#2563eb;border-color:#2563eb;}
+[data-theme="dark"] .cell.checked{background:var(--blue);border-color:var(--blue);}
 [data-theme="dark"] .toast{border:1px solid var(--g300);}
 
 .mybar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--card);border:1px solid var(--g200);border-radius:12px;padding:12px 14px;margin-bottom:12px;}
@@ -246,7 +246,7 @@ input,textarea,select{color:var(--g800);}
 .mybar .nickin:focus{border-color:var(--blue);background:var(--card);}
 .mybar .nickin.need{border-color:var(--amber);background:#fffbeb;}
 .mybar .nickstate{font-size:13px;color:var(--g500);}
-.btn-blue{background:var(--blue);color:white;border:none;border-radius:8px;padding:9px 16px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.btn-blue{background:var(--blue);color:var(--on-acc);border:none;border-radius:8px;padding:9px 16px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;}
 .btn-blue:hover{background:var(--blue-dk);}
 .btn-line{background:var(--card);color:var(--g600);border:1px solid var(--g200);border-radius:8px;padding:9px 14px;font-size:14px;cursor:pointer;font-family:inherit;white-space:nowrap;}
 .btn-line:hover{background:var(--g100);}
@@ -270,7 +270,7 @@ input,textarea,select{color:var(--g800);}
 <header>
   <div class="hdr-top">
     <div class="logo"><span id="roomTitle"></span> <em>노래</em> 빙고</div>
-    <div class="hdr-r"><span style="font-size:11px;color:var(--g300);">v17</span><button class="btn-sm" id="langBtn">日本語</button><button class="btn-sm icon-btn" id="themeBtn" aria-label="다크 모드">🌙</button><a href="admin.html" class="btn-sm">관리자</a></div>
+    <div class="hdr-r"><span style="font-size:11px;color:var(--g300);">v18</span><button class="btn-sm" id="langBtn">日本語</button><button class="btn-sm icon-btn" id="themeBtn" aria-label="다크 모드">🌙</button><a href="admin.html" class="btn-sm">관리자</a></div>
   </div>
   <div class="nowbar" id="nowBar" hidden><span class="now-label">최근 부른 곡</span><div class="now-list" id="nowList"></div></div>
 </header>
@@ -594,11 +594,46 @@ function renderNowBar(songs, extra) {
     <span class="nno">${no}</span><span class="nt">${esc(songTitle(s))}</span>${songArtist(s) ? `<span class="na">${esc(songArtist(s))}</span>` : ''}${extra ? extra(s) : ''}</span>`).join('');
 }
 
+// ── 방 테마 색 (관리자가 고르면 시청자 화면도 같이 바뀜) ──
+const THEMES = {
+  default: null,
+  red: [0, 75, 'ko:빨강|ja:レッド'], orange: [26, 85, 'ko:주황|ja:オレンジ'], yellow: [46, 88, 'ko:노랑|ja:イエロー'],
+  green: [140, 45, 'ko:초록|ja:グリーン'], blue: [205, 70, 'ko:파랑|ja:ブルー'], indigo: [232, 55, 'ko:남색|ja:ネイビー'],
+  purple: [275, 55, 'ko:보라|ja:パープル'], gray: [220, 8, 'ko:회색|ja:グレー'],
+};
+const THEME_KEYS = Object.keys(THEMES);
+const themeLabel = k => { if (!THEMES[k]) return LANG === 'ja' ? 'デフォルト' : '기본'; const m = THEMES[k][2].match(LANG === 'ja' ? /ja:([^|]+)/ : /ko:([^|]+)/); return m ? m[1] : k; };
+let _roomTheme = 'default';
+function themeVars(key, dark) {
+  const t = THEMES[key]; if (!t) return null;
+  const [h, s] = t, c = (sat, l) => `hsl(${h}, ${Math.round(sat)}%, ${l}%)`;
+  const accL = key === 'yellow' ? 70 : key === 'gray' ? 74 : 76;
+  return dark ? {
+    '--blue': c(s, accL - 6), '--blue-dk': c(Math.max(s, 40), 78), '--blue-lt': c(s * .35, 22), '--blue-md': c(s * .35, 38),
+    '--blue-xl': c(s * .3, 13), '--bg': c(s * .2, 6), '--on-acc': c(Math.min(s, 55), 14),
+  } : {
+    '--blue': c(s, accL), '--blue-dk': c(Math.min(s, 60), 38), '--blue-lt': c(s, 92), '--blue-md': c(s * .8, 82),
+    '--blue-xl': c(s, 97), '--bg': c(s * .6, 98.5), '--on-acc': c(Math.min(s, 60), 20),
+  };
+}
+function applyRoomTheme(key) {
+  _roomTheme = THEMES[key] !== undefined ? key : 'default';
+  const root = document.documentElement;
+  ['--blue', '--blue-dk', '--blue-lt', '--blue-md', '--blue-xl', '--bg', '--on-acc'].forEach(n => root.style.removeProperty(n));
+  const v = themeVars(_roomTheme, root.dataset.theme === 'dark');
+  if (v) Object.entries(v).forEach(([k, x]) => root.style.setProperty(k, x));
+}
+// 사진 저장용 (항상 밝은 화면 기준)
+function shotColors() {
+  const v = themeVars(_roomTheme, false);
+  return v ? { acc: v['--blue'], on: v['--on-acc'], md: v['--blue-md'], dk: v['--blue-dk'] } : { acc: '#2563eb', on: '#ffffff', md: '#93c5fd', dk: '#2563eb' };
+}
+
 // ── 다크 모드 / 언어 버튼 ──
 function setupHeaderButtons() {
   const tb = $('themeBtn'), lb = $('langBtn');
   const paint = () => { const d = document.documentElement.dataset.theme === 'dark'; tb.textContent = d ? '☀️' : '🌙'; tb.title = d ? '라이트 모드' : '다크 모드'; };
-  if (tb) { paint(); tb.onclick = () => { const d = document.documentElement.dataset.theme !== 'dark'; document.documentElement.dataset.theme = d ? 'dark' : 'light'; store.set('msbingo-theme', d ? 'dark' : 'light'); paint(); if (typeof onThemeChange === 'function') onThemeChange(); }; }
+  if (tb) { paint(); tb.onclick = () => { const d = document.documentElement.dataset.theme !== 'dark'; document.documentElement.dataset.theme = d ? 'dark' : 'light'; store.set('msbingo-theme', d ? 'dark' : 'light'); paint(); applyRoomTheme(_roomTheme); if (typeof onThemeChange === 'function') onThemeChange(); }; }
   if (lb) { lb.textContent = LANG === 'ja' ? '한국어' : '日本語'; lb.onclick = () => { store.set('msbingo-lang', LANG === 'ja' ? 'ko' : 'ja'); location.reload(); }; }
 }
 setupHeaderButtons();
@@ -673,7 +708,7 @@ const JA = {
   '설정을 불러오지 못했어요.': '設定を読み込めませんでした。', '시청자 빙고판을 불러오지 못했어요.': '視聴者のカードを読み込めませんでした。', '아직 태그가 없어요. 아래에서 새 태그를 만들어 주세요.': 'まだタグがありません。下で新しいタグを作ってください。',
   '크기를 바꾸면 이미 채운 시청자 빙고판의 칸 배치가 달라져요. 새 판을 시작하기 전에 바꾸는 걸 추천해요.': 'サイズを変えると、すでに埋めた視聴者カードの配置が変わります。新しいゲームを始める前に変更するのがおすすめです。',
   '빙고판 크기를 바꿨어요.': 'カードのサイズを変更しました。', '크기 바꾸기': 'サイズ変更', '일본어 표기': '日本語表記', '일본어 화면에서 보일 이름이에요. 비워 두면 원래 이름이 보여요. 기본 조건처럼 자동으로 번역되는 건 흐린 글씨로 미리 보여요.': '日本語画面で表示される名前です。空欄なら元の名前が表示されます。デフォルトのお題のように自動で翻訳されるものは薄い文字で表示されます。',
-  '칸 주제': 'マスのお題', '🎲 랜덤 주제': '🎲 ランダムお題', '🧹 주제 모두 지우기': '🧹 お題をすべて消す', '+ 주제': '+ お題', '랜덤 주제': 'ランダムお題',
+  '칸 주제': 'マスのお題', '테마 색': 'テーマカラー', '시청자 화면도 같이 바뀌어요': '視聴者の画面も一緒に変わります', '테마를 바꾸지 못했어요.': 'テーマを変更できませんでした。', '🎲 랜덤 주제': '🎲 ランダムお題', '🧹 주제 모두 지우기': '🧹 お題をすべて消す', '+ 주제': '+ お題', '랜덤 주제': 'ランダムお題',
   '지금 주제를 모두 바꿔요.': '今のお題をすべて入れ替えます。', '시청자가 넣은 곡은 그 자리에 그대로 남아요.': '視聴者が入れた曲はそのまま残ります。', '랜덤으로 바꾸기': 'ランダムにする',
   '🎲 새 주제로 바꿨어요. 마음에 안 들면 한 번 더 눌러 보세요.': '🎲 新しいお題にしました。気に入らなければもう一度押してみてください。', '빙고판을 먼저 만들어 주세요.': '先にビンゴカードを作ってください。',
   '이미 주제가 모두 비어 있어요.': 'お題はすでにすべて空です。', '주제 모두 지우기': 'お題をすべて消す', '모든 칸의 주제를 지워요. 빈 칸은 눌러서 새로 적을 수 있어요.': 'すべてのマスのお題を消します。空いたマスはタップして新しく入力できます。',
@@ -724,6 +759,7 @@ const JA_RULES = [
   [/^지금 노래 목록에 보이는 (\d+)곡에 적용돼요\. 태그 필터나 검색으로 곡을 먼저 좁혀 주세요\.$/, (_, n) => `いま曲リストに表示中の${n}曲に適用されます。タグやキーワードで先に絞り込んでください。`],
   [/^(\d+)곡에 태그를 붙였어요\.$/, (_, n) => `${n}曲にタグを付けました。`], [/^(\d+)곡에서 태그를 뗐어요\.$/, (_, n) => `${n}曲からタグを外しました。`],
   [/^(.+) 계정을 등록했어요\.$/, (_, e) => `${e} を登録しました。`],
+  [/^테마를 (.+)\(으\)로 바꿨어요\.$/, (_, t) => `テーマを${t}に変更しました。`],
   [/^(\d+)개 바뀜$/, (_, n) => `${n}件変更`], [/^일본어 표기 (\d+)개를 저장했어요\.$/, (_, n) => `日本語表記を${n}件保存しました。`],
   [/^(\d+)×(\d+) 빙고판으로 바꿨어요\.$/, (_, a, b) => `${a}×${b}のカードに変更しました。`],
 ];
@@ -1093,7 +1129,7 @@ function wrapLines(ctx, text, maxW, maxLines) {
 async function makeShot() {
   if (S.conds.length < 25) return;
   try { await document.fonts.ready; } catch {}
-  const cells = cellsNow(), order = bingoOrder(cells);
+  const cells = cellsNow(), order = bingoOrder(cells), TC = shotColors();
   const F = w => `${w} {S}px Pretendard, -apple-system, sans-serif`;
   const font = (w, s) => F(w).replace('{S}', s);
   const N = gridN(), W = 1080, P = 56, G = 12, CS = (W - P*2 - G*(N-1)) / N;
@@ -1101,11 +1137,11 @@ async function makeShot() {
   const H = P + headH + CS*N + G*(N-1) + logH + 70;
   const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
   const ctx = cv.getContext('2d');
-  ctx.fillStyle = '#f8fafc'; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = (themeVars(_roomTheme, false) || {})['--bg'] || '#f8fafc'; ctx.fillRect(0, 0, W, H);
   // 머리
   ctx.fillStyle = '#1f2937'; ctx.font = font(700, 30); ctx.textBaseline = 'alphabetic';
   ctx.fillText(tr(`${S.roomName} 노래 빙고`.trim()), P, P + 30);
-  ctx.fillStyle = '#2563eb'; ctx.font = font(800, 56);
+  ctx.fillStyle = TC.dk; ctx.font = font(800, 56);
   let nick = S.nick || tr('이름 없음'); while (ctx.measureText(nick).width > W - P*2 - 260 && nick.length > 1) nick = nick.slice(0, -1);
   ctx.fillText(nick, P, P + 100);
   ctx.textAlign = 'right'; ctx.fillStyle = '#1f2937'; ctx.font = font(800, 56);
@@ -1118,21 +1154,21 @@ async function makeShot() {
   cells.forEach((c, i) => {
     const [x, y] = pos(i);
     rr(ctx, x, y, CS, CS, 18);
-    ctx.fillStyle = c.checked ? '#2563eb' : (c.songId ? '#ffffff' : '#f3f4f6'); ctx.fill();
-    ctx.lineWidth = 3; ctx.strokeStyle = c.checked ? '#2563eb' : (c.songId ? '#93c5fd' : '#e5e7eb'); ctx.stroke();
+    ctx.fillStyle = c.checked ? TC.acc : (c.songId ? '#ffffff' : '#f3f4f6'); ctx.fill();
+    ctx.lineWidth = 3; ctx.strokeStyle = c.checked ? TC.acc : (c.songId ? TC.md : '#e5e7eb'); ctx.stroke();
     const cf = { 5: 24, 4: 30, 3: 38 }[N], sf = { 5: 26, 4: 32, 3: 40 }[N], af = { 5: 19, 4: 22, 3: 26 }[N];
-    ctx.fillStyle = c.checked ? 'rgba(255,255,255,.85)' : '#4b5563'; ctx.font = font(800, cf);
+    ctx.fillStyle = c.checked ? TC.on : '#4b5563'; ctx.globalAlpha = c.checked ? .8 : 1; ctx.font = font(800, cf);
     wrapLines(ctx, c.cond, CS - 28 - (c.checked ? 34 : 0), 2).forEach((l, k) => ctx.fillText(l, x + 14, y + 14 + cf + k * (cf + 4)));
     if (c.songId) {
-      ctx.font = font(800, sf); ctx.fillStyle = c.checked ? '#ffffff' : '#1f2937';
+      ctx.globalAlpha = 1; ctx.font = font(800, sf); ctx.fillStyle = c.checked ? TC.on : '#1f2937';
       const tl = wrapLines(ctx, c.song, CS - 28, 2);
       const baseY = y + CS - 16 - (c.artist ? af + 7 : 0);
       tl.forEach((l, k) => ctx.fillText(l, x + 14, baseY - (tl.length - 1 - k) * (sf + 4)));
-      if (c.artist) { ctx.font = font(500, af); ctx.fillStyle = c.checked ? 'rgba(255,255,255,.8)' : '#6b7280'; ctx.fillText(wrapLines(ctx, c.artist, CS - 28, 1)[0] || '', x + 14, y + CS - 14); }
+      if (c.artist) { ctx.font = font(500, af); ctx.fillStyle = c.checked ? TC.on : '#6b7280'; ctx.globalAlpha = c.checked ? .8 : 1; ctx.fillText(wrapLines(ctx, c.artist, CS - 28, 1)[0] || '', x + 14, y + CS - 14); ctx.globalAlpha = 1; }
     }
     if (c.checked) {
       ctx.beginPath(); ctx.arc(x + CS - 26, y + 26, 16, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill();
-      ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.beginPath();
+      ctx.globalAlpha = 1; ctx.strokeStyle = TC.dk; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.beginPath();
       ctx.moveTo(x + CS - 33, y + 26); ctx.lineTo(x + CS - 28, y + 32); ctx.lineTo(x + CS - 19, y + 20); ctx.stroke();
     }
   });
@@ -1214,6 +1250,7 @@ onSnapshot(doc(db, 'rooms', ROOM), snap => {
   if (!S.meta) { showGate('없는 방이에요. 방 주소를 다시 확인해 주세요.'); return; }
   S.roomName = S.meta.name || '';
   TAG_JA = S.meta.tagJa || {};
+  applyRoomTheme(S.meta.theme || 'default');
   $('roomTitle').textContent = S.roomName; document.title = tr(`${S.roomName} 노래 빙고`);
   if (!isOpen()) S.sel = null;
   renderAll(); syncNick();
